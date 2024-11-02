@@ -1,0 +1,66 @@
+@startuml
+
+skinparam defaultFontName Monospaced
+skinparam linetype ortho
+
+entity User {
+  user_id   : INTEGER      <<PK, NOT NULL>>
+  --
+  username  : VARCHAR(50)  <<NOT NULL>>
+  email     : VARCHAR(100) <<NOT NULL, UNIQUE>>
+  password  : VARCHAR(100) <<NOT NULL>>
+  role_id   : INTEGER      <<FK, NOT NULL>>
+}
+
+entity Role {
+  role_id   : INTEGER      <<PK, NOT NULL>>
+  --
+  role_name : VARCHAR(20)  <<NOT NULL>>
+}
+
+entity Book {
+  book_id          : INTEGER      <<PK, NOT NULL>>
+  --
+  title            : VARCHAR(100) <<NOT NULL>>
+  authors          : VARCHAR(255)[] <<NOT NULL>>
+  category_id      : INTEGER      <<FK, NOT NULL>>
+  published_date   : DATE
+  description      : TEXT
+  isbn             : VARCHAR(20)  <<UNIQUE>>
+  page_count       : INTEGER
+  thumbnail        : VARCHAR(255)
+  language         : VARCHAR(10)
+  barcode          : VARCHAR(50)  <<UNIQUE>>
+}
+
+entity Library {
+  library_id : INTEGER      <<PK, NOT NULL>>
+  --
+  user_id    : INTEGER      <<FK, NOT NULL>>
+  book_id    : INTEGER      <<FK, NOT NULL>>
+  status     : VARCHAR(10)  <<NOT NULL>> -- Possible values: 'to read', 'reading', 'read'
+}
+
+entity Category {
+  category_id   : INTEGER      <<PK, NOT NULL>>
+  --
+  category_name : VARCHAR(50)  <<NOT NULL>>
+}
+
+entity Comment {
+  comment_id : INTEGER      <<PK, NOT NULL>>
+  --
+  user_id    : INTEGER      <<FK, NOT NULL>>
+  book_id    : INTEGER      <<FK, NOT NULL>>
+  text       : TEXT         <<NOT NULL>>
+  date       : DATE
+}
+
+User ||--o{ Library : "owns books in"
+Book ||--o{ Library : "is included in"
+User ||--o{ Comment : "writes"
+Book ||--o{ Comment : "receives"
+Role ||--o{ User : "assigns role"
+Category ||--o{ Book : "categorizes"
+
+@enduml
