@@ -1,8 +1,9 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-[#928176] p-4 flex flex-col items-center justify-between">
       <div className="absolute top-0 right-0 h-full w-1/3">
-        {/* Première courbe violette */}
         <div
           className="absolute top-0 right-0 w-full h-1/2 rounded-bl-full"
           style={{
@@ -10,8 +11,6 @@ export default function Home() {
             clipPath: 'ellipse(70% 100% at 100% 0%)',
           }}
         />
-        
-        {/* Deuxième courbe orange avec dégradé */}
         <div
           className="absolute top-1/2 right-0 w-full h-1/2"
           style={{
@@ -29,7 +28,7 @@ export default function Home() {
           <span className="text-white">.</span>
         </h1>
 
-         <div className="flex items-center mt-4">
+        <div className="flex items-center mt-4">
           <h2 className="text-black text-3xl sm:text-5xl font-bold shadow-lg shadow-orange-500/50">
             Read
           </h2>
@@ -44,9 +43,14 @@ export default function Home() {
         </div>
       </div>
 
-      <button type="button" className="mb-4 px-8 py-3 bg-[#964e25] text-black font-bold rounded-full hover:bg-[#884924] transition duration-300">
-           Get Started
-      </button>
+      <Link href="/auth/register"> {/* Utilisation de la balise Link pour la navigation */}
+        <button 
+          type="button" 
+          className="mb-4 px-8 py-3 bg-[#964e25] text-black font-bold rounded-full hover:bg-[#884924] transition duration-300"
+        >
+          Get Started
+        </button>
+      </Link>
     </main>
   );
 }
