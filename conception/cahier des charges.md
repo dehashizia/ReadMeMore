@@ -56,6 +56,7 @@ ReadMeMore est une application de gestion de bibliothèque personnelle permettan
 ### 4.1. Technologies utilisées
 
 - **Front-end :**
+- - Next.js
   - React
   - TypeScript
   - Tailwind CSS
