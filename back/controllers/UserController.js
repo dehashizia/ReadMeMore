@@ -73,11 +73,9 @@ exports.register = async (req, res) => {
       .json({ message: "Utilisateur enregistré avec succès", token });
   } catch (error) {
     console.error("Erreur lors de l'enregistrement", error);
-    res
-      .status(500)
-      .json({
-        error: "Échec de l'enregistrement en raison d'une erreur serveur",
-      });
+    res.status(500).json({
+      error: "Échec de l'enregistrement en raison d'une erreur serveur",
+    });
   }
 };
 
@@ -125,5 +123,42 @@ exports.login = async (req, res) => {
     res
       .status(500)
       .json({ error: "Échec de la connexion en raison d'une erreur serveur" });
+  }
+};
+exports.getProfile = async (req, res) => {
+  // Vérifie si le token est passé dans l'en-tête Authorization
+  const token = req.headers.authorization?.split(" ")[1]; // Récupère le token depuis Authorization Bearer <token>
+
+  if (!token) {
+    return res.status(401).json({ error: "Token manquant" });
+  }
+
+  try {
+    // Vérifie le token et décode-le
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId; // Récupère userId du token décodé
+    console.log("User ID from token:", userId);
+
+    // Récupère les informations de l'utilisateur dans la base de données
+    const user = await User.findOne({ where: { user_id: userId } });
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé." });
+    }
+
+    // Renvoie les informations du profil
+    res.json({
+      username: user.username,
+      email: user.email,
+      roleId: user.role_id,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération du profil", error);
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Token invalide" });
+    }
+    res
+      .status(500)
+      .json({ error: "Erreur serveur lors de la récupération du profil." });
   }
 };

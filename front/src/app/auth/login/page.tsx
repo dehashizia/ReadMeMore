@@ -54,7 +54,7 @@ export default function Login() {
       localStorage.setItem('token', token); 
 
       alert('Login successful!');
-      router.push('/'); 
+      router.push('/search'); 
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.error || 'Failed to login');
@@ -65,7 +65,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#928176]">
+    <div className="flex items-center justify-center min-h-screen ">
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl mb-4">Login</h2>
         {error && <p className="text-red-500">{error}</p>}

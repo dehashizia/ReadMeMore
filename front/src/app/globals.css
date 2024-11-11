@@ -15,7 +15,15 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(
+    to right,
+    #171730,
+    #928176,
+    #eead82
+  ); /* Exemple de dégradé */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  color: #fff;
 }

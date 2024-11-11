@@ -8,7 +8,7 @@ require("dotenv").config();
 require("./database");
 
 const userRoutes = require("./routes/userRoutes");
-
+const bookRoutes = require("./routes/bookRoutes");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -33,6 +33,7 @@ app.get("/api/csrf-token", (req, res) => {
 
 // Utilisation des routes
 app.use("/api", userRoutes);
+app.use("/api", bookRoutes);
 
 // Démarrage du serveur
 app.listen(port, () => {
