@@ -127,7 +127,7 @@ exports.login = async (req, res) => {
 };
 exports.getProfile = async (req, res) => {
   // Vérifie si le token est passé dans l'en-tête Authorization
-  const token = req.headers.authorization?.split(" ")[1]; // Récupère le token depuis Authorization Bearer <token>
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ error: "Token manquant" });
@@ -136,7 +136,7 @@ exports.getProfile = async (req, res) => {
   try {
     // Vérifie le token et décode-le
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId; // Récupère userId du token décodé
+    const userId = decoded.userId;
     console.log("User ID from token:", userId);
 
     // Récupère les informations de l'utilisateur dans la base de données
@@ -146,7 +146,6 @@ exports.getProfile = async (req, res) => {
       return res.status(404).json({ error: "Utilisateur non trouvé." });
     }
 
-    // Renvoie les informations du profil
     res.json({
       username: user.username,
       email: user.email,
@@ -160,5 +159,50 @@ exports.getProfile = async (req, res) => {
     res
       .status(500)
       .json({ error: "Erreur serveur lors de la récupération du profil." });
+  }
+};
+exports.updateProfile = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Token manquant" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const { username, email } = req.body;
+    const updatedUser = await User.update(
+      { username, email },
+      { where: { user_id: userId } }
+    );
+
+    if (updatedUser[0] === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+
+    res.json({ message: "Profil mis à jour avec succès" });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du profil", error);
+    res.status(500).json({ error: "Erreur serveur lors de la mise à jour" });
+  }
+};
+
+exports.deleteAccount = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Token manquant" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const deletedUser = await User.destroy({ where: { user_id: userId } });
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+
+    res.json({ message: "Compte supprimé avec succès" });
+  } catch (error) {
+    console.error("Erreur lors de la suppression du compte", error);
+    res.status(500).json({ error: "Erreur serveur lors de la suppression" });
   }
 };

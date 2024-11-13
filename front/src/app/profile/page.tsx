@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { CogIcon } from '@heroicons/react/24/outline'; 
+import Link from "next/link";
 
 export default function Profile() {
   const [userData, setUserData] = useState<{
@@ -65,6 +67,13 @@ export default function Profile() {
         <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
           <p className="text-xl mb-4 text-black">Nom d'utilisateur : {userData.username}</p>
           <p className="text-xl mb-4 text-black">Email : {userData.email}</p>
+             {/* Icône de paramètres pour modifier le profil */}
+             <Link href="/settings">
+            <div className="flex items-center space-x-2 mt-4 cursor-pointer">
+              <CogIcon className="w-6 h-6 text-gray-700" />
+              <span className="text-lg text-gray-700">Modifier mon profil</span>
+            </div>
+          </Link>
           {/* Bouton de déconnexion */}
           <button  type="button"
             onClick={handleLogout}

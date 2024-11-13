@@ -46,7 +46,7 @@ export default function MyLibrary() {
   }, [API_BASE_URL]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-[#928176] p-4">
+    <div className="min-h-screen flex flex-col items-center  p-4">
       <h1 className="text-2xl font-bold mb-6">My Library</h1>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       <div className="w-full max-w-md">

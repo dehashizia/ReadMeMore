@@ -34,7 +34,8 @@ app.get("/api/csrf-token", (req, res) => {
 // Utilisation des routes
 app.use("/api", userRoutes);
 app.use("/api", bookRoutes);
-
+// Vérification de connexion des routes
+console.log("Routes /api/user et /api/book chargées avec succès.");
 // Démarrage du serveur
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
