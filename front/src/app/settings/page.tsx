@@ -36,7 +36,11 @@ export default function Settings() {
         ]);
 
         console.log("User data fetched:", profileResponse.data);
-        setUserData(profileResponse.data);
+        setUserData({
+          username: profileResponse.data.username || "",
+          email: profileResponse.data.email || "",
+          newPassword: "", // Toujours initialisé pour éviter l'état non contrôlé
+        });
         setCsrfToken(csrfResponse.data.csrfToken);
       } catch (error) {
         console.error("Failed to load profile data or CSRF token:", error);
@@ -52,23 +56,35 @@ export default function Settings() {
   // Mise à jour du profil avec le CSRF token
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Update profile submitted");
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-
-      const response = await axios.put(`${API_BASE_URL}/api/profile`, userData, {
+  
+      const response = await axios.put(`${API_BASE_URL}/api/profile`, {
+        username: userData.username,
+        email: userData.email,
+        newPassword: userData.newPassword,
+      }, {
         headers: {
           Authorization: `Bearer ${token}`,
           "X-CSRF-Token": csrfToken || "", 
         },
         withCredentials: true,
       });
-
-      console.log("Profile updated successfully:", response.data);
-      alert("Profile updated successfully!");
-      router.push("/profile");
+  
+      const { message, passwordChanged } = response.data;
+      console.log("Profile updated successfully:", message);
+  
+      if (passwordChanged) {
+        // Supprimer le token et rediriger vers la page de connexion
+        alert("Mot de passe mis à jour. Veuillez vous reconnecter.");
+        localStorage.removeItem("token");
+        router.push("/auth/login");
+      } else {
+        alert("Profil mis à jour avec succès !");
+        router.push("/profile");
+      }
     } catch (error) {
       console.error("Failed to update profile:", error);
       setError("Failed to update profile.");
@@ -114,7 +130,7 @@ export default function Settings() {
         <input
           id="username"
           type="text"
-          value={userData.username}
+          value={userData.username || ""}
           onChange={(e) => setUserData({ ...userData, username: e.target.value })}
           className="border p-2 w-full mb-4 text-black"
         />
@@ -123,7 +139,7 @@ export default function Settings() {
         <input
           id="email"
           type="email"
-          value={userData.email}
+          value={userData.email || ""}
           onChange={(e) => setUserData({ ...userData, email: e.target.value })}
           className="border p-2 w-full mb-4 text-black"
         />
@@ -132,14 +148,14 @@ export default function Settings() {
         <input
           id="newPassword"
           type="password"
-          value={userData.newPassword}
+          value={userData.newPassword || ""}
           onChange={(e) => setUserData({ ...userData, newPassword: e.target.value })}
           className="border p-2 w-full mb-4 text-black"
         />
 
         <button
           type="submit"
-          className="mb-4 px-8 py-3 bg-blue-500 text-white font-bold rounded-full"
+          className="mb-4 px-8 py-3 bg-[#212149] text-white font-bold rounded-full"
         >
           Appliquer
         </button>
@@ -148,7 +164,7 @@ export default function Settings() {
       <div className="flex space-x-4 mt-4">
         <button type="button"
           onClick={handleDeleteAccount}
-          className="text-red-600 flex items-center space-x-2"
+          className="text-[#85451a] flex items-center space-x-2"
         >
           <TrashIcon className="w-6 h-6" />
           <span>Supprimer mon compte</span>

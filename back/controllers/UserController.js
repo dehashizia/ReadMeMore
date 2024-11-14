@@ -169,23 +169,41 @@ exports.updateProfile = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
 
-    const { username, email } = req.body;
-    const updatedUser = await User.update(
-      { username, email },
-      { where: { user_id: userId } }
-    );
+    const { username, email, newPassword } = req.body;
+    const updateData = {};
+
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (newPassword) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedUser = await User.update(updateData, {
+      where: { user_id: userId },
+    });
 
     if (updatedUser[0] === 0) {
       return res.status(404).json({ error: "Utilisateur non trouvé" });
     }
 
-    res.json({ message: "Profil mis à jour avec succès" });
+    console.log("Profile updated successfully for user ID:", decoded.userId);
+
+    // Indiquer au frontend que l'utilisateur doit se reconnecter si le mot de passe est mis à jour
+    res.json({
+      message: "Profil mis à jour avec succès",
+      passwordChanged: !!newPassword,
+    });
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du profil", error);
-    res.status(500).json({ error: "Erreur serveur lors de la mise à jour" });
+    console.error("Error updating profile:", error);
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Token invalide" });
+    }
+    res
+      .status(500)
+      .json({ error: "Erreur serveur lors de la mise à jour du profil." });
   }
 };
-
 exports.deleteAccount = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ error: "Token manquant" });
