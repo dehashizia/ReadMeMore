@@ -1,4 +1,3 @@
-// controllers/LibraryController.js
 const Library = require("../models/Library");
 
 exports.getLibrary = async (req, res) => {

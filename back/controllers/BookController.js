@@ -1,116 +1,83 @@
-// controllers/BookController.js
+const axios = require("axios");
 const Book = require("../models/Book");
-const { Op } = require("sequelize");
+const Category = require("../models/Category");
+// Clé API Google Books
+const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 
-exports.getAllBooks = async (req, res) => {
+// Fonction pour chercher des livres
+const searchBooks = async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res
+      .status(400)
+      .json({ error: "Veuillez fournir un terme de recherche." });
+  }
+
   try {
-    const books = await Book.findAll();
+    const googleBooksResponse = await axios.get(
+      "https://www.googleapis.com/books/v1/volumes",
+      {
+        params: {
+          q: query,
+          key: GOOGLE_BOOKS_API_KEY,
+          maxResults: 10,
+        },
+      }
+    );
+
+    const booksData = googleBooksResponse.data.items;
+    const books = [];
+
+    for (const bookData of booksData) {
+      const volumeInfo = bookData.volumeInfo;
+      const categoryName = volumeInfo.categories?.[0] || "Uncategorized";
+
+      let category = await Category.findOne({
+        where: { category_name: categoryName },
+      });
+
+      if (!category) {
+        category = await Category.create({ category_name: categoryName });
+      }
+
+      const isbn = volumeInfo.industryIdentifiers?.[0]?.identifier;
+      if (!isbn) {
+        console.warn("Aucun ISBN trouvé pour ce livre.");
+        continue;
+      }
+
+      const existingBook = await Book.findOne({
+        where: { isbn: isbn },
+      });
+
+      if (!existingBook) {
+        const newBook = await Book.create({
+          title: volumeInfo.title,
+          authors: volumeInfo.authors || ["Auteur inconnu"],
+          category_id: category.category_id,
+          published_date: volumeInfo.publishedDate,
+          description: volumeInfo.description,
+          isbn: isbn,
+          page_count: volumeInfo.pageCount,
+          thumbnail: volumeInfo.imageLinks?.thumbnail,
+          language: volumeInfo.language,
+        });
+        books.push(newBook);
+      } else {
+        books.push(existingBook);
+      }
+    }
+
     res.json(books);
   } catch (error) {
-    console.error("Error fetching books", error);
-    res.status(500).json({ error: "Unable to fetch books" });
-  }
-};
-
-exports.getBookById = async (req, res) => {
-  const { book_id } = req.params;
-  try {
-    const book = await Book.findByPk(book_id);
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
-    }
-    res.json(book);
-  } catch (error) {
-    console.error("Error fetching book", error);
-    res.status(500).json({ error: "Unable to fetch book" });
-  }
-};
-
-exports.addBook = async (req, res) => {
-  const {
-    title,
-    authors,
-    category_id,
-    published_date,
-    description,
-    isbn,
-    page_count,
-    thumbnail,
-    language,
-    barcode,
-  } = req.body;
-
-  try {
-    const newBook = await Book.create({
-      title,
-      authors,
-      category_id,
-      published_date,
-      description,
-      isbn,
-      page_count,
-      thumbnail,
-      language,
-      barcode,
+    console.error("Erreur lors de la recherche de livres :", error);
+    res.status(500).json({
+      error: "Une erreur s'est produite lors de la recherche de livres.",
     });
-    res.status(201).json(newBook);
-  } catch (error) {
-    console.error("Error adding book", error);
-    res.status(500).json({ error: "Unable to add book" });
   }
 };
 
-exports.updateBook = async (req, res) => {
-  const { book_id } = req.params;
-  const {
-    title,
-    authors,
-    category_id,
-    published_date,
-    description,
-    isbn,
-    page_count,
-    thumbnail,
-    language,
-    barcode,
-  } = req.body;
-
-  try {
-    const book = await Book.findByPk(book_id);
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
-    }
-    await book.update({
-      title,
-      authors,
-      category_id,
-      published_date,
-      description,
-      isbn,
-      page_count,
-      thumbnail,
-      language,
-      barcode,
-    });
-    res.json(book);
-  } catch (error) {
-    console.error("Error updating book", error);
-    res.status(500).json({ error: "Unable to update book" });
-  }
-};
-
-exports.deleteBook = async (req, res) => {
-  const { book_id } = req.params;
-
-  try {
-    const book = await Book.findByPk(book_id);
-    if (!book) {
-      return res.status(404).json({ error: "Book not found" });
-    }
-    await book.destroy();
-    res.status(204).send();
-  } catch (error) {
-    console.error("Error deleting book", error);
-    res.status(500).json({ error: "Unable to delete book" });
-  }
+module.exports = {
+  searchBooks,
 };

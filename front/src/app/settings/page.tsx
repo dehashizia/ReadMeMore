@@ -28,7 +28,7 @@ export default function Settings() {
           return;
         }
 
-        const [profileResponse, csrfResponse] = await Promise.all([
+        const [profileResponse, csrfResponse] = await Promise.all([  
           axios.get(`${API_BASE_URL}/api/profile`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
@@ -117,6 +117,15 @@ export default function Settings() {
     }
   };
 
+  // Ajouter un gestionnaire de clic pour l'icône "Changer de mot de passe"
+  const handlePasswordChangeClick = () => {
+    // Tu peux ici copier la logique du formulaire de mise à jour du mot de passe
+    setUserData({
+      ...userData,
+      newPassword: "Nouveau mot de passe", // Valeur par défaut, tu peux personnaliser ça
+    });
+  };
+
   if (loading) {
     return <div>Chargement...</div>;
   }
@@ -144,7 +153,16 @@ export default function Settings() {
           className="border p-2 w-full mb-4 text-black"
         />
 
-        <label htmlFor="newPassword" className="block text-xl mb-2 text-amber-800">Nouveau mot de passe</label>
+        <div className="flex items-center space-x-2">
+          <label htmlFor="newPassword" className="block text-xl mb-2 text-amber-800">Nouveau mot de passe</label>
+          <button 
+            type="button"
+            onClick={handlePasswordChangeClick}
+            className="text-[#1e1e49]"
+          >
+            <LockClosedIcon className="w-6 h-6" />
+          </button>
+        </div>
         <input
           id="newPassword"
           type="password"
@@ -155,7 +173,7 @@ export default function Settings() {
 
         <button
           type="submit"
-          className="mb-4 px-8 py-3 bg-[#212149] text-white font-bold rounded-full"
+          className="mb-4 px-8 py-3 bg-[#1e1e49] text-white font-bold rounded-full"
         >
           Appliquer
         </button>
@@ -164,15 +182,10 @@ export default function Settings() {
       <div className="flex space-x-4 mt-4">
         <button type="button"
           onClick={handleDeleteAccount}
-          className="text-[#85451a] flex items-center space-x-2"
+          className="text-[#793f18] flex items-center space-x-2"
         >
           <TrashIcon className="w-6 h-6" />
           <span>Supprimer mon compte</span>
-        </button>
-
-        <button type="button" className="text-yellow-600 flex items-center space-x-2">
-          <LockClosedIcon className="w-6 h-6" />
-          <span>Changer de mot de passe</span>
         </button>
       </div>
     </div>

@@ -1,4 +1,3 @@
-// models/Library.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database");
 const User = require("./User");
@@ -14,7 +13,7 @@ const Library = sequelize.define(
     },
     user_id: { type: DataTypes.INTEGER, allowNull: false },
     book_id: { type: DataTypes.INTEGER, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false }, // "read", "reading", "want to read", etc.
+    status: { type: DataTypes.STRING, allowNull: false },
   },
   {
     tableName: "library",

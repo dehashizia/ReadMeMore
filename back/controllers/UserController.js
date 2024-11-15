@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
-// Schéma de validation pour l'enregistrement
 const registerSchema = Joi.object({
   username: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
@@ -16,18 +15,15 @@ const registerSchema = Joi.object({
     .required(),
 });
 
-// Schéma de validation pour la connexion
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
 });
 
 exports.register = async (req, res) => {
-  // Conversion de l'email en minuscules pour assurer l'unicité
   const { username, email, password } = req.body;
   const lowercaseEmail = email.toLowerCase();
 
-  // Validation des données
   const { error } = registerSchema.validate({
     username,
     email: lowercaseEmail,
@@ -38,7 +34,6 @@ exports.register = async (req, res) => {
   }
 
   try {
-    // Vérification de l'unicité de l'email
     const existingUser = await User.findOne({
       where: { email: lowercaseEmail },
     });
@@ -189,7 +184,6 @@ exports.updateProfile = async (req, res) => {
 
     console.log("Profile updated successfully for user ID:", decoded.userId);
 
-    // Indiquer au frontend que l'utilisateur doit se reconnecter si le mot de passe est mis à jour
     res.json({
       message: "Profil mis à jour avec succès",
       passwordChanged: !!newPassword,

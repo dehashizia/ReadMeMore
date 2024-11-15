@@ -1,7 +1,6 @@
-// models/Book.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database");
-const Category = require("./Category"); // Si tu as un modèle Category
+const Category = require("./Category");
 
 const Book = sequelize.define(
   "Book",
