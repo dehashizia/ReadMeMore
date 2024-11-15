@@ -19,16 +19,16 @@ CREATE TABLE "user" (
 
 CREATE TABLE book (
     book_id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    authors VARCHAR(255)[] NOT NULL,
+    title TEXT NOT NULL,
+    authors TEXT[] NOT NULL,
     category_id INT NOT NULL,
     published_date DATE,
     description TEXT,
-    isbn VARCHAR(20) UNIQUE,
+    isbn VARCHAR(30) UNIQUE,
     page_count INT,
     thumbnail VARCHAR(255),
     language VARCHAR(10),
-    barcode VARCHAR(50) UNIQUE,
+    barcode VARCHAR(100) UNIQUE,
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 

@@ -10,23 +10,22 @@ const Book = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    title: { type: DataTypes.STRING, allowNull: false },
-    authors: { type: DataTypes.ARRAY(DataTypes.STRING), allowNull: false },
+    title: { type: DataTypes.TEXT, allowNull: false }, // Modifié pour TEXT
+    authors: { type: DataTypes.ARRAY(DataTypes.TEXT), allowNull: false }, // Modifié pour TEXT[]
     category_id: { type: DataTypes.INTEGER, allowNull: false },
     published_date: { type: DataTypes.DATE },
-    description: { type: DataTypes.TEXT },
-    isbn: { type: DataTypes.STRING, unique: true },
+    description: { type: DataTypes.TEXT }, // Inchangé
+    isbn: { type: DataTypes.STRING(30), unique: true }, // Modifié pour accepter jusqu'à 30 caractères
     page_count: { type: DataTypes.INTEGER },
     thumbnail: { type: DataTypes.STRING },
     language: { type: DataTypes.STRING },
-    barcode: { type: DataTypes.STRING, unique: true },
+    barcode: { type: DataTypes.STRING(100), unique: true }, // Modifié pour accepter jusqu'à 100 caractères
   },
   {
     tableName: "book",
     timestamps: false,
   }
 );
-
 Book.belongsTo(Category, { foreignKey: "category_id" });
 
 module.exports = Book;
