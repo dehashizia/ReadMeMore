@@ -1,10 +1,10 @@
 const axios = require("axios");
 const Book = require("../models/Book");
 const Category = require("../models/Category");
+
 // Clé API Google Books
 const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 
-// Fonction pour chercher des livres
 const searchBooks = async (req, res) => {
   const { query } = req.query;
 
@@ -49,6 +49,11 @@ const searchBooks = async (req, res) => {
 
       const existingBook = await Book.findOne({
         where: { isbn: isbn },
+        include: {
+          model: Category,
+          as: "category",
+          attributes: ["category_name"],
+        },
       });
 
       if (!existingBook) {
@@ -63,9 +68,29 @@ const searchBooks = async (req, res) => {
           thumbnail: volumeInfo.imageLinks?.thumbnail,
           language: volumeInfo.language,
         });
-        books.push(newBook);
+
+        const fullBook = await Book.findOne({
+          where: { book_id: newBook.book_id },
+          include: {
+            model: Category,
+            as: "category",
+            attributes: ["category_name"],
+          },
+        });
+
+        books.push({
+          ...fullBook.toJSON(),
+          category_name: fullBook.Category
+            ? fullBook.Category.category_name
+            : "Uncategorized",
+        });
       } else {
-        books.push(existingBook);
+        books.push({
+          ...existingBook.toJSON(),
+          category_name: existingBook.Category
+            ? existingBook.Category.category_name
+            : "Uncategorized",
+        });
       }
     }
 
