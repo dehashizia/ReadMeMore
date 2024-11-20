@@ -49,7 +49,7 @@ Un **ERD (Diagramme Entité-Relation)** est un schéma utilisé pour modéliser 
 
 ---
 
-## **ERD pour le projet *ReadTogether* avec PlantUML**
+## **ERD pour le projet *ReadMeMore* avec PlantUML**
 
 ### **Entités** :
 

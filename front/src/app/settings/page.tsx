@@ -17,7 +17,7 @@ export default function Settings() {
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
 
-  // Récupération des données utilisateur et du CSRF token
+ 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -39,7 +39,7 @@ export default function Settings() {
         setUserData({
           username: profileResponse.data.username || "",
           email: profileResponse.data.email || "",
-          newPassword: "", // Toujours initialisé pour éviter l'état non contrôlé
+          newPassword: "",
         });
         setCsrfToken(csrfResponse.data.csrfToken);
       } catch (error) {
@@ -53,7 +53,7 @@ export default function Settings() {
     fetchUserData();
   }, [API_BASE_URL, router]);
 
-  // Mise à jour du profil avec le CSRF token
+ 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -77,7 +77,7 @@ export default function Settings() {
       console.log("Profile updated successfully:", message);
   
       if (passwordChanged) {
-        // Supprimer le token et rediriger vers la page de connexion
+      
         alert("Mot de passe mis à jour. Veuillez vous reconnecter.");
         localStorage.removeItem("token");
         router.push("/auth/login");
@@ -91,7 +91,7 @@ export default function Settings() {
     }
   };
 
-  // Suppression du compte avec le CSRF token
+ 
   const handleDeleteAccount = async () => {
     console.log("Delete account submitted");
 
@@ -117,12 +117,12 @@ export default function Settings() {
     }
   };
 
-  // Ajouter un gestionnaire de clic pour l'icône "Changer de mot de passe"
+
   const handlePasswordChangeClick = () => {
-    // Tu peux ici copier la logique du formulaire de mise à jour du mot de passe
+
     setUserData({
       ...userData,
-      newPassword: "Nouveau mot de passe", // Valeur par défaut, tu peux personnaliser ça
+      newPassword: "Nouveau mot de passe", 
     });
   };
 

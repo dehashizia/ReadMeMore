@@ -64,7 +64,7 @@ ReadMeMore est une application de gestion de bibliothèque personnelle permettan
   - Node.js
   - Express
   - PostgreSQL
-  - pg (PostgreSQL client pour Node.js)
+  - sequelize
 - **Sécurité :**
   - JWT pour l'authentification
   - CORS pour les requêtes cross-origin

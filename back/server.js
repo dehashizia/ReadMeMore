@@ -9,6 +9,7 @@ require("./database");
 
 const userRoutes = require("./routes/userRoutes");
 const bookRoutes = require("./routes/bookRoutes");
+const libraryRoutes = require("./routes/libraryRoutes");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -34,8 +35,11 @@ app.get("/api/csrf-token", (req, res) => {
 // Utilisation des routes
 app.use("/api", userRoutes);
 app.use("/api", bookRoutes);
+app.use("/api", libraryRoutes);
+
 // Vérification de connexion des routes
 console.log("Routes /api/user et /api/book chargées avec succès.");
+console.log("Route /api/library chargée avec succès.");
 // Démarrage du serveur
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
