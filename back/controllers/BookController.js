@@ -2,7 +2,6 @@ const axios = require("axios");
 const Book = require("../models/Book");
 const Category = require("../models/Category");
 
-// Clé API Google Books
 const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
 
 const searchBooks = async (req, res) => {
@@ -102,7 +101,42 @@ const searchBooks = async (req, res) => {
     });
   }
 };
+const getBookDetails = async (req, res) => {
+  const { bookId } = req.params;
+
+  try {
+    const book = await Book.findOne({
+      where: { book_id: bookId },
+      include: {
+        model: Category,
+        as: "category",
+        attributes: ["category_name"],
+      },
+    });
+
+    if (!book) {
+      return res.status(404).json({ error: "Livre non trouvé." });
+    }
+
+    res.json({
+      ...book.toJSON(),
+      category_name: book.category
+        ? book.category.category_name
+        : "Uncategorized",
+    });
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des détails du livre :",
+      error
+    );
+    res.status(500).json({
+      error:
+        "Une erreur s'est produite lors de la récupération des détails du livre.",
+    });
+  }
+};
 
 module.exports = {
   searchBooks,
+  getBookDetails,
 };

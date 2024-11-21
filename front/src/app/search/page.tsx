@@ -197,11 +197,16 @@ export default function Search() {
                   </p>
                   <p className="text-black text-sm">{book.published_date}</p>
                 </div>
+                <Link href={`/details/${book.book_id}`}>
+  <button type="button" className="bg-blue-500 text-white px-4 py-2 rounded">Voir les détails</button>
+</Link>
                 <HeartIcon
                   onClick={() => handleAddToLibrary(book)}
                   className="w-6 h-6 text-red-500 cursor-pointer mt-2 hover:scale-110 transition-transform"
                 />
+                 
               </div>
+            
             ))
           ) : (
             <p className="text-black text-center">Aucun résultat trouvé.</p>

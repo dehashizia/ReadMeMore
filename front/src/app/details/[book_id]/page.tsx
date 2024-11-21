@@ -1,0 +1,212 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import Link from "next/link";
+import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, PaperClipIcon } from "@heroicons/react/24/solid";
+
+interface Book {
+  book_id: string;
+  title: string;
+  authors: string[];
+  category?: { category_name: string };
+  published_date?: string;
+  page_count?: number;
+  isbn?: string;
+  thumbnail?: string;
+  description?: string;
+}
+
+export default function Details() {
+  const [book, setBook] = useState<Book | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [comment, setComment] = useState<string>("");
+  const [rating, setRating] = useState<number>(0); 
+  const { book_id } = useParams();
+
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+
+
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/csrf-token`, {
+          withCredentials: true,
+        });
+        setCsrfToken(response.data.csrfToken);
+      } catch (err) {
+        console.error('Failed to fetch CSRF token');
+      }
+    };
+    fetchCsrfToken();
+  }, [API_BASE_URL]);
+
+ 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "/auth/login";
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+ 
+  useEffect(() => {
+    if (!book_id) return;
+    const fetchBookDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/books/${book_id}`);
+        setBook(response.data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des détails du livre :", error);
+      }
+    };
+    fetchBookDetails();
+  }, [book_id, API_BASE_URL]);
+
+ 
+  const handleAddToLibrary = async (book: Book) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/library/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken || "",
+        },
+        body: JSON.stringify({ book_id: book.book_id }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Livre ajouté à votre bibliothèque !");
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du livre :", error);
+    }
+  };
+
+
+  const handleSubmitComment = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/comments/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken || "",
+        },
+        body: JSON.stringify({ book_id: book?.book_id, comment, rating }), 
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Commentaire ajouté !");
+        setComment("");
+        setRating(0);
+      } else {
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du commentaire :", error);
+    }
+  };
+
+  if (!isAuthenticated || !book) {
+    return <div>Chargement...</div>;
+  }
+
+  return (
+    <main className="relative min-h-screen p-6 flex flex-col items-center justify-between">
+      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+        <Link href="/profile">
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+        </Link>
+        <Link href="/my-library">
+          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+        </Link>
+      </div>
+
+      <div className="flex flex-col items-center justify-start text-center w-full max-w-4xl bg-white shadow-xl p-8 rounded-lg mt-10">
+        <h1 className="text-3xl font-semibold mb-4">{book.title}</h1>
+        {book.thumbnail && (
+          <img
+            src={book.thumbnail}
+            alt={`Couverture de ${book.title}`}
+            className="w-48 h-72 object-cover rounded-lg shadow-md mb-6"
+          />
+        )}
+        <p className="text-lg text-gray-700 mb-2">Auteur(s) : {book.authors.join(", ")}</p>
+        <p className="text-sm text-gray-600 mb-2">Catégorie : {book.category?.category_name || "Non catégorisé"}</p>
+        <p className="text-sm text-gray-600 mb-2">Publié le : {book.published_date}</p>
+        <p className="text-sm text-gray-600 mb-2">Pages : {book.page_count}</p>
+        <p className="text-sm text-gray-600 mb-4">ISBN : {book.isbn}</p>
+        <p className="text-sm text-gray-700 mb-6">{book.description}</p>
+
+        <div className="flex space-x-6 mb-4">
+          <button type="button" className="flex items-center space-x-2 text-yellow-500" onClick={() => {}}>
+            <StarIcon className="w-6 h-6" />
+            <span>Wishlist</span>
+          </button>
+          <button type="button" className="flex items-center space-x-2 text-green-500" onClick={() => {}}>
+            <CheckCircleIcon className="w-6 h-6" />
+            <span>Lu</span>
+          </button>
+          <button type="button" className="flex items-center space-x-2 text-blue-500" onClick={() => {}}>
+            <BookOpenIcon className="w-6 h-6" />
+            <span>À lire</span>
+          </button>
+          <HeartIcon
+            onClick={() => handleAddToLibrary(book)}
+            className="w-6 h-6 text-red-500 cursor-pointer hover:scale-110 transition-transform"
+          />
+        </div>
+
+        {/* Notation par étoiles */}
+        <div className="flex items-center space-x-2 mb-4">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <StarIcon
+              key={star}
+              className={`w-6 h-6 cursor-pointer ${star <= rating ? "text-yellow-500" : "text-gray-300"}`}
+              onClick={() => setRating(star)}
+            />
+          ))}
+        </div>
+
+        <textarea
+          className="w-full p-3 text-sm rounded-md border border-gray-300 mb-4"
+          placeholder="Laissez un commentaire"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+        <button
+          type="button"
+          className="bg-indigo-950 text-white py-2 px-4 rounded-full hover:bg-blue-950 transition"
+          onClick={handleSubmitComment}
+        >
+          Ajouter un commentaire
+        </button>
+
+        <div className="flex justify-center space-x-4 mt-6">
+          <Link href="/search">
+            <button
+              type="button"
+              className="bg-[#964e25] text-white py-2 px-4 rounded-full hover:bg-[#884924] transition duration-300"
+            >
+              Retour à la recherche
+            </button>
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}

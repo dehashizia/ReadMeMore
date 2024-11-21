@@ -121,9 +121,39 @@ const removeFromLibrary = async (req, res) => {
     });
   }
 };
+const updateBookStatus = async (req, res) => {
+  try {
+    const user = verifyToken(req);
+    const { book_id, status } = req.body;
+    const user_id = user.userId;
+
+    if (!book_id || !status) {
+      return res.status(400).json({ error: "ID du livre et statut requis." });
+    }
+
+    const entry = await Library.findOne({ where: { user_id, book_id } });
+
+    if (!entry) {
+      return res
+        .status(404)
+        .json({ error: "Livre non trouvé dans votre bibliothèque." });
+    }
+
+    entry.status = status;
+    await entry.save();
+
+    res.status(200).json({ message: "Statut mis à jour avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du statut :", error);
+    res.status(500).json({
+      error: error.message || "Impossible de mettre à jour le statut.",
+    });
+  }
+};
 
 module.exports = {
   addToLibrary,
   getUserLibrary,
   removeFromLibrary,
+  updateBookStatus,
 };

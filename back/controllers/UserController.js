@@ -43,7 +43,6 @@ exports.register = async (req, res) => {
         .json({ error: "L'adresse e-mail est déjà utilisée." });
     }
 
-    // Hash du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       username,
@@ -51,7 +50,6 @@ exports.register = async (req, res) => {
       password: hashedPassword,
     });
 
-    // Génération du token JWT
     const token = jwt.sign(
       { userId: user.user_id, roleId: user.role_id, username: user.username },
       process.env.JWT_SECRET,
@@ -75,11 +73,9 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  // Conversion de l'email en minuscules pour la comparaison
   const { email, password } = req.body;
   const lowercaseEmail = email.toLowerCase();
 
-  // Validation des données
   const { error } = loginSchema.validate({ email: lowercaseEmail, password });
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
@@ -100,7 +96,6 @@ exports.login = async (req, res) => {
         .json({ error: "Email ou mot de passe incorrect." });
     }
 
-    // Génération du token JWT
     const token = jwt.sign(
       { userId: user.user_id, roleId: user.role_id, username: user.username },
       process.env.JWT_SECRET,
@@ -121,7 +116,6 @@ exports.login = async (req, res) => {
   }
 };
 exports.getProfile = async (req, res) => {
-  // Vérifie si le token est passé dans l'en-tête Authorization
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -129,12 +123,10 @@ exports.getProfile = async (req, res) => {
   }
 
   try {
-    // Vérifie le token et décode-le
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
     console.log("User ID from token:", userId);
 
-    // Récupère les informations de l'utilisateur dans la base de données
     const user = await User.findOne({ where: { user_id: userId } });
 
     if (!user) {
