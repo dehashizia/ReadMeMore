@@ -20,11 +20,12 @@ const verifyToken = (req) => {
 const addToLibrary = async (req, res) => {
   try {
     const user = verifyToken(req);
-    const { book_id } = req.body;
+    const { book_id, status } = req.body; // Statut ajouté
+    console.log("Statut reçu :", status); // Ajouter un log pour vérifier le statut
     const user_id = user.userId;
 
-    if (!book_id) {
-      return res.status(400).json({ error: "ID du livre requis." });
+    if (!book_id || !status) {
+      return res.status(400).json({ error: "ID du livre et statut requis." });
     }
 
     const existingEntry = await Library.findOne({
@@ -40,7 +41,7 @@ const addToLibrary = async (req, res) => {
     const newEntry = await Library.create({
       user_id,
       book_id,
-      status: "liked",
+      status, // Enregistrement du statut
     });
 
     res.status(201).json({
@@ -78,9 +79,13 @@ const getUserLibrary = async (req, res) => {
       ],
     });
 
-    const books = library.map((entry) => entry.Book);
+    // Ajout du statut du livre dans chaque entrée de la bibliothèque
+    const booksWithStatus = library.map((entry) => ({
+      ...entry.Book.dataValues,
+      status: entry.status,
+    }));
 
-    res.status(200).json({ books });
+    res.status(200).json({ books: booksWithStatus });
   } catch (error) {
     console.error("Erreur lors de la récupération de la bibliothèque :", error);
     res.status(500).json({

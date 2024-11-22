@@ -68,7 +68,8 @@ export default function Details() {
   }, [book_id, API_BASE_URL]);
 
  
-  const handleAddToLibrary = async (book: Book) => {
+  const handleAddToLibrary = async (book: Book, status: string) => {
+    console.log("Status envoyé au backend :", status); 
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/library/add`, {
@@ -78,13 +79,12 @@ export default function Details() {
           Authorization: `Bearer ${token}`,
           "X-CSRF-Token": csrfToken || "",
         },
-        body: JSON.stringify({ book_id: book.book_id }),
+        body: JSON.stringify({ book_id: book.book_id, status }),  
         credentials: "include",
       });
-
       const data = await response.json();
       if (response.ok) {
-        alert("Livre ajouté à votre bibliothèque !");
+        alert(`Livre ajouté à votre bibliothèque avec le statut : ${status}`);
       } else {
         console.error(data.message);
       }
@@ -92,7 +92,6 @@ export default function Details() {
       console.error("Erreur lors de l'ajout du livre :", error);
     }
   };
-
 
   const handleSubmitComment = async () => {
     try {
@@ -153,23 +152,35 @@ export default function Details() {
         <p className="text-sm text-gray-700 mb-6">{book.description}</p>
 
         <div className="flex space-x-6 mb-4">
-          <button type="button" className="flex items-center space-x-2 text-yellow-500" onClick={() => {}}>
-            <StarIcon className="w-6 h-6" />
-            <span>Wishlist</span>
-          </button>
-          <button type="button" className="flex items-center space-x-2 text-green-500" onClick={() => {}}>
-            <CheckCircleIcon className="w-6 h-6" />
-            <span>Lu</span>
-          </button>
-          <button type="button" className="flex items-center space-x-2 text-blue-500" onClick={() => {}}>
-            <BookOpenIcon className="w-6 h-6" />
-            <span>À lire</span>
-          </button>
-          <HeartIcon
-            onClick={() => handleAddToLibrary(book)}
-            className="w-6 h-6 text-red-500 cursor-pointer hover:scale-110 transition-transform"
-          />
-        </div>
+  <button
+    type="button"
+    className="flex items-center space-x-2 text-yellow-500"
+    onClick={() => handleAddToLibrary(book, "wishlist")}  
+  >
+    <StarIcon className="w-6 h-6" />
+    <span>Wishlist</span>
+  </button>
+  <button
+    type="button"
+    className="flex items-center space-x-2 text-green-500"
+    onClick={() => handleAddToLibrary(book, "lu")}  
+  >
+    <CheckCircleIcon className="w-6 h-6" />
+    <span>Lu</span>
+  </button>
+  <button
+    type="button"
+    className="flex items-center space-x-2 text-blue-500"
+    onClick={() => handleAddToLibrary(book, "à lire")}  
+  >
+    <BookOpenIcon className="w-6 h-6" />
+    <span>À lire</span>
+  </button>
+  <HeartIcon
+    onClick={() => handleAddToLibrary(book, "liked")}  
+    className="w-6 h-6 text-red-500 cursor-pointer hover:scale-110 transition-transform"
+  />
+</div>
 
         {/* Notation par étoiles */}
         <div className="flex items-center space-x-2 mb-4">
