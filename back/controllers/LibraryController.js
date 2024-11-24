@@ -126,6 +126,7 @@ const removeFromLibrary = async (req, res) => {
     });
   }
 };
+
 const updateBookStatus = async (req, res) => {
   try {
     const user = verifyToken(req);
