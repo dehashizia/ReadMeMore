@@ -20,6 +20,7 @@ interface Book {
   page_count?: number;
   isbn?: string;
   thumbnail?: string;
+  source?: string; 
 }
 
 export default function Search() {
@@ -185,11 +186,11 @@ export default function Search() {
           </form>
         </section>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 w-full mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {filteredResults.map((book) => (
             <div
               key={book.book_id}
-              className="flex flex-col items-center border p-6 rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow transform hover:scale-105"
+              className="flex flex-col items-center border p-6 rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow transform hover:scale-105  w-full"
             >
               {book.thumbnail && (
                 <img
@@ -204,6 +205,15 @@ export default function Search() {
                 <p className="text-black text-sm mb-2">
                   {book.category?.category_name || "Non catégorisé"}
                 </p>
+                <p className="text-black text-sm mb-2" >
+                  Source :{" "}
+                  {book.source
+                    ? book.source === "database"
+                      ? "Base de données"
+                      : "API Google Books"
+                    : "Source inconnue"}
+                </p>
+           
                 <p className="text-black text-sm">{book.published_date}</p>
               </div>
               <Link href={`/details/${book.book_id}`}>
