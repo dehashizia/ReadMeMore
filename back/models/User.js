@@ -13,6 +13,7 @@ const User = sequelize.define(
     email: { type: DataTypes.STRING, unique: true, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
     role_id: { type: DataTypes.INTEGER, defaultValue: 1 },
+    emailConfirmed: { type: DataTypes.BOOLEAN, defaultValue: false },
   },
   {
     tableName: "user",

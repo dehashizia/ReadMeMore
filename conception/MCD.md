@@ -6,7 +6,6 @@
 - `username` : string
 - `email` : string
 - `password` : string (stored securely)
-- `role_id` : int [FK] (reference to Role)
 
 ## Role
 
@@ -30,8 +29,6 @@
 ## Library
 
 - `library_id` : int [PK]
-- `user_id` : int [FK] (reference to User)
-- `book_id` : int [FK] (reference to Book)
 - `status` : string (possible values: 'to read', 'reading', 'read')
 
 ## Category
@@ -42,8 +39,6 @@
 ## Comment
 
 - `comment_id` : int [PK]
-- `user_id` : int [FK] (reference to User)
-- `book_id` : int [FK] (reference to Book)
 - `text` : string
 - `date` : date
 
@@ -57,16 +52,16 @@
 - **Category 1 -- N Book** : A category can have multiple books.
 
 
-USER: user_id, username, email, password, role_id  
-ROLE: role_id, role_name  
-BOOK: book_id, title, authors, category_id, published_date, description, isbn, page_count, thumbnail, language, barcode  
-LIBRARY: library_id, user_id, book_id, status  
-CATEGORY: category_id, category_name  
-COMMENT: comment_id, user_id, book_id, text, date  
+USER: user_id, username, email, password
+ROLE: role_id, role_name
+BOOK: book_id, title, authors, published_date, description, isbn, page_count, thumbnail, language, barcode
+LIBRARY: library_id, status
+CATEGORY: category_id, category_name
+COMMENT: comment_id, text, date
 
-AVOIR, 1N USER, 0N LIBRARY  
-EST_PRÉSENT_DANS, 1N BOOK, 0N LIBRARY  
-RECEVOIR, 1N BOOK, 0N COMMENT  
-ÉCRIRE, 1N USER, 0N COMMENT  
-ASSOCIER, 1N ROLE, 0N USER  
-GROUPE, 1N CATEGORY, 0N BOOK  
+AVOIR, 1N USER, 0N LIBRARY
+EST_PRÉSENT_DANS, 1N BOOK, 0N LIBRARY
+RECEVOIR, 1N BOOK, 0N COMMENT
+ÉCRIRE, 1N USER, 0N COMMENT
+ASSOCIER, 1N ROLE, 0N USER
+GROUPE, 1N CATEGORY, 0N BOOK 

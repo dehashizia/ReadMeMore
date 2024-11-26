@@ -11,9 +11,10 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
   
   useEffect(() => {
@@ -33,6 +34,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsRegistered(false); 
 
     try {
       const response = await axios.post(
@@ -48,6 +50,7 @@ export default function Register() {
 
       const token = response.data.token; 
       localStorage.setItem('token', token); 
+      setIsRegistered(true); 
 
       alert('Registration successful!');
       router.push('/auth/login');
@@ -65,6 +68,9 @@ export default function Register() {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl mb-4">Register</h2>
         {error && <p className="text-red-500">{error}</p>}
+        {isRegistered && (
+          <p className="text-green-500 mb-4">Registration successful! Please check your email to confirm your account.</p>
+        )}
         <div className="mb-4">
           <label className="block mb-1" htmlFor="username">Username</label>
           <input

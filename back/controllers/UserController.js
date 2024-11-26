@@ -2,7 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
-
+const { sendConfirmationEmail } = require("../mailer");
 const registerSchema = Joi.object({
   username: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
@@ -49,6 +49,16 @@ exports.register = async (req, res) => {
       email: lowercaseEmail,
       password: hashedPassword,
     });
+
+    // Création d'un token de confirmation
+    const emailToken = jwt.sign(
+      { userId: user.user_id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" } // Le token expire après 1 jour
+    );
+
+    // Envoi de l'email de confirmation
+    await sendConfirmationEmail(user.email, emailToken);
 
     const token = jwt.sign(
       { userId: user.user_id, roleId: user.role_id, username: user.username },
@@ -208,5 +218,34 @@ exports.deleteAccount = async (req, res) => {
   } catch (error) {
     console.error("Erreur lors de la suppression du compte", error);
     res.status(500).json({ error: "Erreur serveur lors de la suppression" });
+  }
+};
+exports.confirmEmail = async (req, res) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token manquant" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const user = await User.findOne({ where: { user_id: userId } });
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
+
+    // Mettre à jour l'utilisateur pour marquer l'email comme confirmé
+    user.emailConfirmed = true;
+    await user.save();
+
+    res.json({ message: "Votre adresse email a été confirmée avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de la confirmation de l'email", error);
+    res
+      .status(500)
+      .json({ error: "Erreur serveur lors de la confirmation de l'email" });
   }
 };

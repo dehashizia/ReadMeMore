@@ -32,7 +32,7 @@ export default function MyLibrary() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const { book_id } = useParams();
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
   const statuses = [
     { key: "wishlist", label: "Wishlist", icon: StarIcon, color: "text-yellow-500" },

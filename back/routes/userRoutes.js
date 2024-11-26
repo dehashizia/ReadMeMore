@@ -7,5 +7,5 @@ router.post("/login", UserController.login);
 router.get("/profile", UserController.getProfile);
 router.put("/profile", UserController.updateProfile);
 router.delete("/profile", UserController.deleteAccount);
-
+router.get("/confirm-email", UserController.confirmEmail);
 module.exports = router;
