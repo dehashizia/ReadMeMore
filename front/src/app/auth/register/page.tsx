@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
   const router = useRouter();
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
-  
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
@@ -25,7 +24,7 @@ export default function Register() {
         });
         setCsrfToken(response.data.csrfToken);
       } catch (err) {
-        console.error('Failed to fetch CSRF token');
+        console.error("Failed to fetch CSRF token");
       }
     };
     fetchCsrfToken();
@@ -33,8 +32,8 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsRegistered(false); 
+    setError("");
+    setIsRegistered(false);
 
     try {
       const response = await axios.post(
@@ -42,73 +41,100 @@ export default function Register() {
         { username, email, password },
         {
           headers: {
-            'X-CSRF-Token': csrfToken || '', 
+            "X-CSRF-Token": csrfToken || "",
           },
-          withCredentials: true, 
+          withCredentials: true,
         }
       );
 
-      const token = response.data.token; 
-      localStorage.setItem('token', token); 
-      setIsRegistered(true); 
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      setIsRegistered(true);
 
-      alert('Registration successful!');
-      router.push('/auth/login');
+      alert("Registration successful!");
+      router.push("/auth/login");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.error || 'Failed to register');
+        setError(error.response?.data?.error || "Failed to register");
       } else {
-        setError('Failed to register');
+        setError("Failed to register");
       }
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl mb-4">Register</h2>
-        {error && <p className="text-red-500">{error}</p>}
+    <div
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
+      style={{ backgroundImage: 'url("/book1.webp")' }}
+    >
+      <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50" />
+      <form
+        onSubmit={handleSubmit}
+        className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-lg w-full"
+      >
+        <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">
+          Create an Account
+        </h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {isRegistered && (
-          <p className="text-green-500 mb-4">Registration successful! Please check your email to confirm your account.</p>
+          <p className="text-green-500 text-center mb-4">
+            Registration successful! Please check your email to confirm your account.
+          </p>
         )}
         <div className="mb-4">
-          <label className="block mb-1" htmlFor="username">Username</label>
+          <label className="block text-lg mb-2" htmlFor="username">
+            Username
+          </label>
           <input
             type="text"
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="border rounded w-full p-2 bg-white text-black placeholder-gray-500"
+            className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter your username"
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1" htmlFor="email">Email</label>
+          <label className="block text-lg mb-2" htmlFor="email">
+            Email
+          </label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="border rounded w-full p-2 bg-white text-black placeholder-gray-500"
+            className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter your email"
           />
         </div>
-        <div className="mb-4">
-          <label className="block mb-1" htmlFor="password">Password</label>
+        <div className="mb-6">
+          <label className="block text-lg mb-2" htmlFor="password">
+            Password
+          </label>
           <input
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="border rounded w-full p-2 bg-white text-black placeholder-gray-500"
+            className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter your password"
           />
         </div>
-        <button type="submit" className="w-full bg-[#964e25] text-white p-2 rounded hover:bg-[#884924]">Register</button>
-        <p className="mt-4">Already have an account? <Link href="/auth/login" className="text-blue-500">Login</Link></p>
+        <button
+          type="submit"
+          className="w-full py-3 bg-indigo-900 text-white text-xl font-bold rounded-lg hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-800"
+        >
+          Register
+        </button>
+        <p className="mt-6 text-center text-gray-700">
+          Already have an account?{" "}
+          <Link href="/auth/login" className="text-blue-500 hover:text-blue-600">
+            Login
+          </Link>
+        </p>
       </form>
     </div>
   );

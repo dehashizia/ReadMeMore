@@ -10,6 +10,7 @@ import {
   InformationCircleIcon,
   HeartIcon,
 } from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
 interface Book {
   book_id: string;
@@ -20,7 +21,7 @@ interface Book {
   page_count?: number;
   isbn?: string;
   thumbnail?: string;
-  source?: string; 
+  source?: string;
 }
 
 export default function Search() {
@@ -30,10 +31,10 @@ export default function Search() {
   const [results, setResults] = useState<Book[]>([]);
   const [filteredResults, setFilteredResults] = useState<Book[]>([]);
   const [myLibrary, setMyLibrary] = useState<Book[]>([]);
-  const [csrfToken, setCsrfToken] = useState<string | null>(null); 
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-  
+
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
@@ -42,11 +43,11 @@ export default function Search() {
         });
         setCsrfToken(response.data.csrfToken);
       } catch (err) {
-        console.error('Failed to fetch CSRF token');
+        console.error("Failed to fetch CSRF token");
       }
     };
     fetchCsrfToken();
-  }, [API_BASE_URL]); 
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -87,9 +88,9 @@ export default function Search() {
         body: JSON.stringify({ book_id: book.book_id }),
         credentials: "include",
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         alert("Livre ajouté à votre bibliothèque !");
         setMyLibrary((prevLibrary) => [...prevLibrary, book]);
@@ -121,91 +122,97 @@ export default function Search() {
   }
 
   return (
-    <main className="relative min-h-screen p-4 flex flex-col items-center">
+    <main
+      className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
+      style={{ backgroundImage: "url('/LL.webp')" }}
+    >
+      {/* Image position (bottom left) */}
+      <img
+  src="/d.png"
+  alt="Logo livre"
+  className="absolute top-0 left-0 m-4 w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-48 lg:h-48 rounded-[50%] border-4 border-gray-300 shadow-lg object-cover"
+/>
+      {/* Header Icons */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">
         <Link href="/profile">
-          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         <Link href="/my-library">
-          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         <Link href="/about">
-          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
       </div>
 
-      <div className="flex items-center mt-4 mb-8">
-        <h2 className="text-black text-3xl sm:text-5xl font-bold shadow-lg shadow-orange-500/50">
-          Read
-        </h2>
-        <img
-          src="/logo.jpg"
-          alt="Logo"
-          className="mx-2 w-12 h-12 sm:w-16 sm:h-16"
+      {/* Logo and title */}
+<div className="flex items-center mt-4 mb-8">
+  <h2 className="text-black text-4xl sm:text-6xl font-extrabold shadow-lg shadow-orange-500/50">
+    Read
+  </h2>
+  <img
+    src="/logo M.webp"
+    alt="Logo"
+    className="mx-2 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 object-contain"
+  />
+  <h2 className="text-black text-4xl sm:text-6xl font-extrabold shadow-lg shadow-orange-500/50">
+    eMore
+  </h2>
+</div>
+
+      {/* Search form */}
+      <form onSubmit={handleSearch} className="flex w-full max-w-md mb-6">
+        <input
+          type="text"
+          placeholder="Rechercher un livre"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="border rounded p-3 w-full mr-2 text-black"
         />
-        <h2 className="text-black text-3xl sm:text-5xl font-bold shadow-lg shadow-orange-500/50">
-          eMore
-        </h2>
-      </div>
+        <button
+          type="submit"
+          className="bg-indigo-950 text-white p-3 rounded-full hover:bg-indigo-800 transition duration-300"
+        >
+          Search
+        </button>
+      </form>
 
-      <div className="flex flex-col items-center justify-center text-center w-full max-w-4xl">
-        
+      {/* Category filter form */}
+      <form className="flex items-center w-full max-w-md mb-6">
+        <input
+          type="text"
+          placeholder="Filtrer les catégories"
+          value={categoryFilter}
+          onChange={handleCategoryFilter}
+          className="border rounded p-3 w-full mr-2 text-black"
+        />
+        <button
+          type="button"
+          onClick={applyCategoryFilter}
+          className="bg-indigo-950 text-white p-3 rounded-full hover:bg-indigo-800 transition duration-300"
+        >
+          Filter
+        </button>
+      </form>
 
-        <form onSubmit={handleSearch} className="flex w-full max-w-md mb-6">
-          <input
-            type="text"
-            placeholder="Rechercher un livre"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="border rounded p-3 w-full mr-2 text-black"
-          />
-          <button
-            type="submit"
-            className="bg-indigo-950 text-white p-3 rounded-full hover:bg-blue-900 transition duration-300"
+      {/* Book results */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8">
+        {filteredResults.map((book) => (
+          <div
+            key={book.book_id}
+            className="flex flex-col items-center bg-white bg-opacity-80 backdrop-blur-lg border p-4 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
           >
-            Search
-          </button>
-        </form>
-
-        <section className="categories w-full max-w-lg mt-8 flex flex-col items-center">
-          <form className="flex items-center">
-            <input
-              type="text"
-              placeholder="Filtrer les catégories"
-              value={categoryFilter}
-              onChange={handleCategoryFilter}
-              className="border rounded p-3 text-black mr-2"
-            />
-            <button
-              type="button"
-              onClick={applyCategoryFilter}
-              className="bg-indigo-950 text-white p-3 rounded-full hover:bg-blue-900 transition duration-300"
-            >
-              Filtrer
-            </button>
-          </form>
-        </section>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {filteredResults.map((book) => (
-            <div
-              key={book.book_id}
-              className="flex flex-col items-center border p-6 rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow transform hover:scale-105  w-full"
-            >
-              {book.thumbnail && (
-                <img
-                  src={book.thumbnail}
-                  alt={`Couverture de ${book.title}`}
-                  className="w-32 h-48 object-cover rounded-lg shadow-lg mb-4"
-                />
-              )}
-              <div className="text-center">
-                <h2 className="text-black font-semibold text-xl mb-2">{book.title}</h2>
-                <p className="text-black text-sm mb-2">{book.authors.join(", ")}</p>
-                <p className="text-black text-sm mb-2">
-                  {book.category?.category_name || "Non catégorisé"}
-                </p>
-                <p className="text-black text-sm mb-2" >
+            {book.thumbnail && (
+              <img
+                src={book.thumbnail}
+                alt={`Couverture de ${book.title}`}
+                className="w-32 h-48 object-cover rounded-lg mb-4"
+              />
+            )}
+            <h2 className="text-lg font-bold text-gray-800 mb-2">{book.title}</h2>
+            <p className="text-sm text-gray-600 mb-2">{book.authors.join(", ")}</p>
+            <p className="text-xs text-gray-500">{book.category?.category_name || "Non catégorisé"}</p>
+            <p className="text-black text-sm mb-2" >
                   Source :{" "}
                   {book.source
                     ? book.source === "database"
@@ -213,27 +220,44 @@ export default function Search() {
                       : "API Google Books"
                     : "Source inconnue"}
                 </p>
-           
-                <p className="text-black text-sm">{book.published_date}</p>
-              </div>
-              <Link href={`/details/${book.book_id}`}>
-                <button type="button" className="bg-blue-900 text-white px-4 py-2 rounded">
-                  Voir les détails
-                </button>
-              </Link>
-              <HeartIcon
-                onClick={() => handleAddToLibrary(book)}
-                className="w-6 h-6 text-red-500 cursor-pointer mt-2 hover:scale-110 transition-transform"
-              />
-            </div>
-          ))}
-        </div>
+            <Link href={`/details/${book.book_id}`}>
+              <button type="button" className="bg-blue-800 text-white px-4 py-2 rounded mt-4">
+                Voir les détails
+              </button>
+            </Link>
+          </div>
+        ))}
       </div>
-      <img
-  src="/d.png"
-  alt="Logo livre"
-  className="absolute left-0 bottom-0 m-4 w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-48 lg:h-48 rounded-[50%] border-4 border-gray-300 shadow-lg object-cover"
-/>
+
+     {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+  <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <ul className="flex space-x-6">
+      <li>
+        <a href="/legal" className="hover:underline">
+          Mentions légales
+        </a>
+      </li>
+      <li>
+        <a href="/privacy" className="hover:underline">
+          Politique de confidentialité
+        </a>
+      </li>
+    </ul>
+    <div className="flex space-x-6">
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <FaTwitter className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin className="w-6 h-6 text-white" />
+      </a>
+    </div>
+  </div>
+</footer>
     </main>
   );
 }

@@ -144,10 +144,11 @@ export default function Details() {
             className="w-48 h-72 object-cover rounded-lg shadow-md mb-6"
           />
         )}
-        <p className="text-lg text-gray-700 mb-2">Auteur(s) : {book.authors.join(", ")}</p>
-        <p className="text-sm text-gray-600 mb-2">Catégorie : {book.category?.category_name || "Non catégorisé"}</p>
-        <p className="text-sm text-gray-600 mb-2">Publié le : {book.published_date}</p>
-        <p className="text-sm text-gray-600 mb-2">Pages : {book.page_count}</p>
+        <p className="text-LG text-gray-700 mb-2">Title : {book.title}</p>
+        <p className="text-lg text-gray-700 mb-2">Author(s) : {book.authors.join(", ")}</p>
+        <p className="text-sm text-gray-600 mb-2">Category : {book.category?.category_name || "Non catégorisé"}</p>
+        <p className="text-sm text-gray-600 mb-2">Published : {book.published_date}</p>
+        <p className="text-sm text-gray-600 mb-2">Page_count : {book.page_count}</p>
         <p className="text-sm text-gray-600 mb-4">ISBN : {book.isbn}</p>
         <p className="text-sm text-gray-700 mb-6">{book.description}</p>
 

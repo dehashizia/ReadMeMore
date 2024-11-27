@@ -43,7 +43,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Link href="/auth/register"> {/* Utilisation de la balise Link pour la navigation */}
+      <Link href="/get-started"> {/* Utilisation de la balise Link pour la navigation */}
         <button 
           type="button" 
           className="mb-4 px-8 py-3 bg-[#964e25] text-black font-bold rounded-full hover:bg-[#884924] transition duration-300"

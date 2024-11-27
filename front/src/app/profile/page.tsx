@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { CogIcon } from '@heroicons/react/24/outline'; 
+import { CogIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function Profile() {
   const [userData, setUserData] = useState<{
     username: string;
     email: string;
-    role_name: string;  
+    role_name: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -27,14 +27,14 @@ export default function Profile() {
           setLoading(false);
           return;
         }
-        
+
         const response = await axios.get(`${API_BASE_URL}/api/profile`, {
           headers: {
-            Authorization: `Bearer ${token}`,  
+            Authorization: `Bearer ${token}`,
           },
         });
 
-        setUserData(response.data); 
+        setUserData(response.data);
       } catch (error) {
         console.error("Failed to fetch user data", error);
         setError("Failed to load profile data.");
@@ -45,13 +45,20 @@ export default function Profile() {
 
     fetchUserData();
   }, [API_BASE_URL]);
-    // Fonction de déconnexion
-    const handleLogout = () => {
-      localStorage.removeItem("token");  
-      router.push("/auth/login");  
-    };
 
- 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/auth/login");
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Ajout de la logique d'upload de l'image ici
+      alert("Photo uploaded! (fonctionnalité à implémenter)");
+    }
+  };
+
   if (loading) {
     return <div>Chargement...</div>;
   }
@@ -61,30 +68,65 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4">
-      <h1 className="text-2xl font-bold mb-6 text-black">Profil</h1>
-      {userData ? (
-        <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
-          <p className="text-xl mb-4 text-black">Nom d'utilisateur : {userData.username}</p>
-          <p className="text-xl mb-4 text-black">Email : {userData.email}</p>
-             {/* Icône de paramètres pour modifier le profil */}
-             <Link href="/settings">
-            <div className="flex items-center space-x-2 mt-4 cursor-pointer">
-              <CogIcon className="w-6 h-6 text-gray-700" />
-              <span className="text-lg text-gray-700">Modifier mon profil</span>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4 relative"
+      style={{ backgroundImage: `url("/book.webp")` }}
+    >
+      <div className="absolute inset-0 bg-black opacity-50" />
+      <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-lg w-full text-center">
+        <h1 className="text-3xl font-bold mb-4 text-gray-900">My Profile</h1>
+        {userData ? (
+          <div className="space-y-4">
+            {/* Photo de profil */}
+            <div className="relative">
+              <img
+                src="/l.avif" // Remplace par une URL dynamique après implémentation
+                alt="User Profile"
+                className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-indigo-500"
+              />
+              <label
+                htmlFor="profile-photo"
+                className="absolute -bottom-2 right-20 bg-indigo-500 text-white p-2 rounded-full cursor-pointer"
+              >
+                📷
+              </label>
+              <input
+                id="profile-photo"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+              />
             </div>
-          </Link>
-          {/* Bouton de déconnexion */}
-          <button  type="button"
-            onClick={handleLogout}
-            className="mb-4 px-8 py-3 bg-[#964e25] text-black font-bold rounded-full hover:bg-[#884924] transition duration-300"
-          >
-            Déconnexion
-          </button>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+
+            {/* Informations utilisateur */}
+            <p className="text-xl font-semibold text-gray-800">
+              Username: <span className="text-gray-600">{userData.username}</span>
+            </p>
+            <p className="text-xl font-semibold text-gray-800">
+              Email: <span className="text-gray-600">{userData.email}</span>
+            </p>
+
+            {/* Lien vers les paramètres */}
+            <Link href="/settings">
+              <div className="flex items-center justify-center space-x-2 mt-4 text-indigo-700 hover:text-indigo-900 cursor-pointer">
+                <CogIcon className="w-6 h-6" />
+                <span className="text-lg">Modifier mon profil</span>
+              </div>
+            </Link>
+
+            {/* Bouton de déconnexion */}
+            <button type="button"
+              onClick={handleLogout}
+              className="mt-6 w-full py-3 bg-indigo-900 text-white text-lg font-bold rounded-lg hover:bg-indigo-800"
+            >
+              Déconnexion
+            </button>
+          </div>
+        ) : (
+          <p className="text-gray-600">Chargement des données...</p>
+        )}
+      </div>
     </div>
   );
 }

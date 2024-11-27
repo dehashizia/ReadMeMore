@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 const { sendConfirmationEmail } = require("../mailer");
+const { sendResetPasswordEmail } = require("../mailer");
 const registerSchema = Joi.object({
   username: Joi.string().min(3).max(30).required(),
   email: Joi.string().email().required(),
@@ -247,5 +248,59 @@ exports.confirmEmail = async (req, res) => {
     res
       .status(500)
       .json({ error: "Erreur serveur lors de la confirmation de l'email" });
+  }
+};
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ error: "Email requis." });
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé." });
+    }
+
+    const resetToken = jwt.sign(
+      { userId: user.user_id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const resetLink = `${process.env.BASE_URL}/reset-password?token=${resetToken}`;
+
+    // Appel à la fonction sendResetPasswordEmail
+    await sendResetPasswordEmail(email, resetLink);
+
+    res.json({ message: "Un email de réinitialisation a été envoyé." });
+  } catch (error) {
+    console.error("Erreur lors de la demande de réinitialisation", error);
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+};
+exports.resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+
+  if (!token || !password) {
+    return res.status(400).json({ error: "Token et mot de passe requis." });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ where: { user_id: decoded.userId } });
+
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: "Mot de passe réinitialisé avec succès." });
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation", error);
+    res.status(500).json({ error: "Erreur serveur." });
   }
 };

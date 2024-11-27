@@ -24,4 +24,16 @@ const sendConfirmationEmail = (email, token) => {
   return transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendConfirmationEmail };
+// Fonction d'envoi de l'email de réinitialisation de mot de passe
+const sendResetPasswordEmail = async (email, resetLink) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Réinitialisation de votre mot de passe",
+    text: `Cliquez sur ce lien pour réinitialiser votre mot de passe : ${resetLink}`,
+    html: `<p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p><a href="${resetLink}">${resetLink}</a>`,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+module.exports = { sendConfirmationEmail, sendResetPasswordEmail };

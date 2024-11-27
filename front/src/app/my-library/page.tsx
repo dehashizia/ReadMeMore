@@ -14,6 +14,7 @@ import {
   TrashIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import axios from "axios";
 
 interface Book {
@@ -168,7 +169,7 @@ export default function MyLibrary() {
   };
 
   return (
-    <main className="min-h-screen p-6">
+    <main    >
       {/* Header */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">
         <Link href="/profile">
@@ -184,11 +185,7 @@ export default function MyLibrary() {
 
       {/* Title Section */}
       <div className="flex flex-col items-center justify-center space-y-4 mt-8 sm:mt-12">
-        <img
-          src="/mylibrary.jpg"
-          alt="Icône bibliothèque"
-          className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-[50%] border-4 border-gray-300 shadow-lg object-cover"
-        />
+        
         <h1 className="text-black text-3xl sm:text-5xl font-bold text-center">
           My Library
         </h1>
@@ -274,6 +271,35 @@ export default function MyLibrary() {
           );
         })}
       </div>
+       {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+  <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <ul className="flex space-x-6">
+      <li>
+        <a href="/legal" className="hover:underline">
+          Mentions légales
+        </a>
+      </li>
+      <li>
+        <a href="/privacy" className="hover:underline">
+          Politique de confidentialité
+        </a>
+      </li>
+    </ul>
+    <div className="flex space-x-6">
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <FaTwitter className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin className="w-6 h-6 text-white" />
+      </a>
+    </div>
+  </div>
+</footer>
     </main>
   );
 }

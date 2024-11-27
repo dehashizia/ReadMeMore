@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -14,10 +15,10 @@ export default function Settings() {
   const [loading, setLoading] = useState<boolean>(true);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const router = useRouter();
+  const [randomPosition, setRandomPosition] = useState<string>("left");
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
- 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -42,6 +43,10 @@ export default function Settings() {
           newPassword: "",
         });
         setCsrfToken(csrfResponse.data.csrfToken);
+
+        // Set random position for the book images
+        setRandomPosition(Math.random() > 0.5 ? "left" : "right");
+
       } catch (error) {
         console.error("Failed to load profile data or CSRF token:", error);
         setError("Failed to load profile data.");
@@ -53,14 +58,13 @@ export default function Settings() {
     fetchUserData();
   }, [API_BASE_URL, router]);
 
- 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-  
+
       const response = await axios.put(`${API_BASE_URL}/api/profile`, {
         username: userData.username,
         email: userData.email,
@@ -72,12 +76,11 @@ export default function Settings() {
         },
         withCredentials: true,
       });
-  
+
       const { message, passwordChanged } = response.data;
       console.log("Profile updated successfully:", message);
-  
+
       if (passwordChanged) {
-      
         alert("Mot de passe mis à jour. Veuillez vous reconnecter.");
         localStorage.removeItem("token");
         router.push("/auth/login");
@@ -91,7 +94,6 @@ export default function Settings() {
     }
   };
 
- 
   const handleDeleteAccount = async () => {
     console.log("Delete account submitted");
 
@@ -117,9 +119,7 @@ export default function Settings() {
     }
   };
 
-
   const handlePasswordChangeClick = () => {
-
     setUserData({
       ...userData,
       newPassword: "Nouveau mot de passe", 
@@ -131,9 +131,22 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center">
+    <div className="min-h-screen p-4 flex flex-col items-center relative">
+      {/* Book images at random positions */}
+      <img
+        src="/lll.webp"
+        alt="Book 1"
+        className={`absolute ${randomPosition === "left" ? "left-0 top-20" : "right-0 top-20"} w-48 h-auto opacity-50`}
+      />
+      <img
+        src="/llll.webp"
+        alt="Book 2"
+        className={`absolute ${randomPosition === "left" ? "right-0 bottom-20" : "left-0 bottom-20"} w-48 h-auto opacity-50`}
+      />
+
       <h1 className="text-2xl font-bold mb-6 text-black">Paramètres du profil</h1>
       {error && <p className="text-red-500">{error}</p>}
+
       <form onSubmit={handleUpdateProfile} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
         <label htmlFor="username" className="block text-xl mb-2 text-amber-800">Nom d'utilisateur</label>
         <input
