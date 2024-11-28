@@ -148,6 +148,7 @@ exports.getProfile = async (req, res) => {
       username: user.username,
       email: user.email,
       roleId: user.role_id,
+      profile_photo: user.profile_photo,
     });
   } catch (error) {
     console.error("Erreur lors de la récupération du profil", error);

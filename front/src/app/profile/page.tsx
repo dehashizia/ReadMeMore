@@ -11,9 +11,11 @@ export default function Profile() {
     username: string;
     email: string;
     role_name: string;
+    profile_photo?: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [imageLoading, setImageLoading] = useState<boolean>(true); 
   const router = useRouter();
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -51,13 +53,60 @@ export default function Profile() {
     router.push("/auth/login");
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Ajout de la logique d'upload de l'image ici
-      alert("Photo uploaded! (fonctionnalité à implémenter)");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Vous devez être connecté pour télécharger une photo.");
+        return;
+      }
+  
+      try {
+        
+        const csrfResponse = await axios.get(`${API_BASE_URL}/api/csrf-token`);
+        const csrfToken = csrfResponse.data.csrfToken;
+  
+    
+        const formData = new FormData();
+        formData.append("profilePhoto", file);
+  
+      
+        const response = await axios.post(
+          `${API_BASE_URL}/api/upload-profile-photo`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+              "X-CSRF-Token": csrfToken, 
+            },
+          }
+        );
+  
+       
+        if (response.data.profile_photo) {
+          alert("Photo de profil mise à jour avec succès !");
+          setUserData((prevData) => {
+           
+            if (prevData) {
+              return {
+                ...prevData,
+                profile_photo: response.data.profile_photo,
+              };
+            }
+          
+            return prevData;
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'upload de la photo", error);
+        alert("Une erreur est survenue lors de l'upload.");
+      }
     }
   };
+
+  const handleImageLoad = () => setImageLoading(false); 
 
   if (loading) {
     return <div>Chargement...</div>;
@@ -79,10 +128,18 @@ export default function Profile() {
           <div className="space-y-4">
             {/* Photo de profil */}
             <div className="relative">
+              {/* Affichage de l'image avec gestion du chargement */}
               <img
-                src="/l.avif" // Remplace par une URL dynamique après implémentation
+                src={
+                  userData.profile_photo
+                    ? `${API_BASE_URL}/uploads/profiles/${userData.profile_photo}`
+                    : "/default-profile.jpg"
+                }
                 alt="User Profile"
-                className="w-24 h-24 mx-auto rounded-full object-cover border-4 border-indigo-500"
+                onLoad={handleImageLoad} 
+                className={`w-24 h-24 mx-auto rounded-full object-cover border-4 border-indigo-500 ${
+                  imageLoading ? "opacity-0" : "opacity-100"
+                }`} 
               />
               <label
                 htmlFor="profile-photo"

@@ -131,19 +131,9 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen p-4 flex flex-col items-center relative">
-      {/* Book images at random positions */}
-      <img
-        src="/lll.webp"
-        alt="Book 1"
-        className={`absolute ${randomPosition === "left" ? "left-0 top-20" : "right-0 top-20"} w-48 h-auto opacity-50`}
-      />
-      <img
-        src="/llll.webp"
-        alt="Book 2"
-        className={`absolute ${randomPosition === "left" ? "right-0 bottom-20" : "left-0 bottom-20"} w-48 h-auto opacity-50`}
-      />
-
+    <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4 relative"
+    style={{ backgroundImage: `url("/book.webp")` }}>
+      
       <h1 className="text-2xl font-bold mb-6 text-black">Paramètres du profil</h1>
       {error && <p className="text-red-500">{error}</p>}
 

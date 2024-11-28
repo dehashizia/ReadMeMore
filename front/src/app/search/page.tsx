@@ -126,12 +126,7 @@ export default function Search() {
       className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
       style={{ backgroundImage: "url('/LL.webp')" }}
     >
-      {/* Image position (bottom left) */}
-      <img
-  src="/d.png"
-  alt="Logo livre"
-  className="absolute top-0 left-0 m-4 w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-48 lg:h-48 rounded-[50%] border-4 border-gray-300 shadow-lg object-cover"
-/>
+      
       {/* Header Icons */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">
         <Link href="/profile">
@@ -153,7 +148,7 @@ export default function Search() {
   <img
     src="/logo M.webp"
     alt="Logo"
-    className="mx-2 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 object-contain"
+    className="mx-2 w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 object-contain rounded-full shadow-xl shadow-orange-500/50" // Ajout de l'ombre ici
   />
   <h2 className="text-black text-4xl sm:text-6xl font-extrabold shadow-lg shadow-orange-500/50">
     eMore
