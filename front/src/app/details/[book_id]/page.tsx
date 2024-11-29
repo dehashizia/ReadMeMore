@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
-import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, PaperClipIcon } from "@heroicons/react/24/solid";
+import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon } from "@heroicons/react/24/solid";
 
 interface Book {
   book_id: string;
@@ -18,16 +18,27 @@ interface Book {
   description?: string;
 }
 
+interface Comment {
+  comment_id: number;
+  user_id: number;
+  book_id: number;
+  user: { username: string };
+  book: { title: string };
+  text: string;
+  date: string;
+  rating: number | null;
+}
+
 export default function Details() {
   const [book, setBook] = useState<Book | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
-  const [rating, setRating] = useState<number>(0); 
+  const [rating, setRating] = useState<number>(0);
+  const [comments, setComments] = useState<Comment[]>([]);
   const { book_id } = useParams();
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -37,13 +48,12 @@ export default function Details() {
         });
         setCsrfToken(response.data.csrfToken);
       } catch (err) {
-        console.error('Failed to fetch CSRF token');
+        console.error("Failed to fetch CSRF token");
       }
     };
     fetchCsrfToken();
   }, [API_BASE_URL]);
 
- 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -53,7 +63,6 @@ export default function Details() {
     }
   }, []);
 
- 
   useEffect(() => {
     if (!book_id) return;
     const fetchBookDetails = async () => {
@@ -67,9 +76,21 @@ export default function Details() {
     fetchBookDetails();
   }, [book_id, API_BASE_URL]);
 
- 
+  useEffect(() => {
+    if (!book_id) return;
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/books/${book_id}/comments`);
+        setComments(response.data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des commentaires :", error);
+      }
+    };
+    fetchComments();
+  }, [book_id, API_BASE_URL]);
+
   const handleAddToLibrary = async (book: Book, status: string) => {
-    console.log("Status envoyé au backend :", status); 
+    console.log("Status envoyé au backend :", status);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/library/add`, {
@@ -79,7 +100,7 @@ export default function Details() {
           Authorization: `Bearer ${token}`,
           "X-CSRF-Token": csrfToken || "",
         },
-        body: JSON.stringify({ book_id: book.book_id, status }),  
+        body: JSON.stringify({ book_id: book.book_id, status }),
         credentials: "include",
       });
       const data = await response.json();
@@ -96,30 +117,31 @@ export default function Details() {
   const handleSubmitComment = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/api/comments/add`, {
+      const response = await fetch(`${API_BASE_URL}/api/books/${book?.book_id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
           "X-CSRF-Token": csrfToken || "",
         },
-        body: JSON.stringify({ book_id: book?.book_id, comment, rating }), 
+        body: JSON.stringify({ text: comment, rating }),
         credentials: "include",
       });
 
-      const data = await response.json();
       if (response.ok) {
         alert("Commentaire ajouté !");
         setComment("");
         setRating(0);
+        const newComment = await response.json();
+        setComments((prevComments) => [...prevComments, newComment]);
       } else {
-        console.error(data.message);
+        console.error("Erreur lors de l'ajout du commentaire :", response.statusText);
       }
     } catch (error) {
       console.error("Erreur lors de l'ajout du commentaire :", error);
     }
   };
-
+  
   if (!isAuthenticated || !book) {
     return <div>Chargement...</div>;
   }
@@ -153,70 +175,84 @@ export default function Details() {
         <p className="text-sm text-gray-700 mb-6">{book.description}</p>
 
         <div className="flex space-x-6 mb-4">
-  <button
-    type="button"
-    className="flex items-center space-x-2 text-yellow-500"
-    onClick={() => handleAddToLibrary(book, "wishlist")}  
-  >
-    <StarIcon className="w-6 h-6" />
-    <span>Wishlist</span>
-  </button>
-  <button
-    type="button"
-    className="flex items-center space-x-2 text-green-500"
-    onClick={() => handleAddToLibrary(book, "lu")}  
-  >
-    <CheckCircleIcon className="w-6 h-6" />
-    <span>Lu</span>
-  </button>
-  <button
-    type="button"
-    className="flex items-center space-x-2 text-blue-500"
-    onClick={() => handleAddToLibrary(book, "à lire")}  
-  >
-    <BookOpenIcon className="w-6 h-6" />
-    <span>À lire</span>
-  </button>
-  <HeartIcon
-    onClick={() => handleAddToLibrary(book, "liked")}  
-    className="w-6 h-6 text-red-500 cursor-pointer hover:scale-110 transition-transform"
-  />
-</div>
-
-        {/* Notation par étoiles */}
-        <div className="flex items-center space-x-2 mb-4">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <StarIcon
-              key={star}
-              className={`w-6 h-6 cursor-pointer ${star <= rating ? "text-yellow-500" : "text-gray-300"}`}
-              onClick={() => setRating(star)}
-            />
-          ))}
+          <button
+            type="button"
+            className="flex items-center space-x-2 text-yellow-500"
+            onClick={() => handleAddToLibrary(book, "wishlist")}
+          >
+            <StarIcon className="w-6 h-6" />
+            <span>Wishlist</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center space-x-2 text-green-500"
+            onClick={() => handleAddToLibrary(book, "lu")}
+          >
+            <CheckCircleIcon className="w-6 h-6" />
+            <span>Lu</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center space-x-2 text-blue-500"
+            onClick={() => handleAddToLibrary(book, "à lire")}
+          >
+            <BookOpenIcon className="w-6 h-6" />
+            <span>À lire</span>
+          </button>
+          <HeartIcon
+            onClick={() => handleAddToLibrary(book, "liked")}
+            className="w-6 h-6 text-red-500 cursor-pointer hover:scale-110 transition-transform"
+          />
         </div>
 
-        <textarea
-          className="w-full p-3 text-sm rounded-md border border-gray-300 mb-4"
-          placeholder="Laissez un commentaire"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button
-          type="button"
-          className="bg-indigo-950 text-white py-2 px-4 rounded-full hover:bg-blue-950 transition"
-          onClick={handleSubmitComment}
-        >
-          Ajouter un commentaire
-        </button>
+        {/* Formulaire d'ajout de commentaire */}
+        <div className="w-full max-w-xl bg-gray-100 p-6 rounded-lg shadow-md text-black">
+          <h2 className="text-xl font-medium mb-4">Ajouter un commentaire</h2>
+          <textarea
+            className="w-full h-32 p-4 mb-4 border border-gray-300 rounded-md text-black"
+            placeholder="Écrivez un commentaire..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <div className="flex space-x-4 mb-4">
+            <span>Note: </span>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <StarIcon
+                key={star}
+                className={`w-6 h-6 cursor-pointer ${rating >= star ? "text-yellow-400" : "text-gray-400"}`}
+                onClick={() => setRating(star)}
+              />
+            ))}
+          </div>
+          <button type="button" onClick={handleSubmitComment} className="bg-blue-800 text-black px-6 py-2 rounded-lg">
+            Ajouter le commentaire
+          </button>
+        </div>
 
-        <div className="flex justify-center space-x-4 mt-6">
-          <Link href="/search">
-            <button
-              type="button"
-              className="bg-[#964e25] text-white py-2 px-4 rounded-full hover:bg-[#884924] transition duration-300"
-            >
-              Retour à la recherche
-            </button>
-          </Link>
+        {/* Affichage des commentaires */}
+        <div className="mt-10 w-full max-w-xl bg-gray-100 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-medium mb-4 text-black">Commentaires</h2>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment.comment_id} className="mb-6">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-black">{comment.user.username}</span>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <StarIcon
+                        key={star}
+                        className={`w-4 h-4 ${comment.rating && comment.rating >= star ? "text-yellow-400" : "text-gray-400"}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-black">{comment.text}</p>
+                <span className="text-xs text-black">{new Date(comment.date).toLocaleDateString()}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-600">Aucun commentaire pour ce livre.</p>
+          )}
         </div>
       </div>
     </main>

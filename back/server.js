@@ -14,11 +14,13 @@ const User = require("./models/User");
 const userRoutes = require("./routes/userRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const libraryRoutes = require("./routes/libraryRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 const app = express();
 const port = process.env.PORT || 3000;
-app.use("/uploads/profiles", express.static("uploads/profiles"));
-app.use(express.urlencoded({ extended: true }));
 
+app.use("/uploads", express.static("uploads"));
+
+// Configuration du stockage des fichiers avec Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "uploads", "profiles"));
@@ -30,8 +32,10 @@ const storage = multer.diskStorage({
   },
 });
 
+// Initialisation de Multer
 const upload = multer({ storage: storage });
 
+// Route pour l'upload de la photo de profil
 app.post(
   "/api/upload-profile-photo",
   upload.single("profilePhoto"),
@@ -51,6 +55,7 @@ app.post(
       if (!user)
         return res.status(404).json({ error: "Utilisateur non trouvé" });
 
+      // Mise à jour de la photo de profil dans la base de données
       const updatedUser = await User.update(
         { profile_photo: req.file.filename },
         { where: { user_id: userId } }
@@ -71,6 +76,7 @@ app.post(
   }
 );
 
+// Middleware
 app.use(
   cors({
     origin: "http://localhost:3001",
@@ -84,17 +90,21 @@ app.use(helmet());
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
+// CSRF token route
 app.get("/api/csrf-token", (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
+// Utilisation des routes
 app.use("/api", userRoutes);
 app.use("/api", bookRoutes);
 app.use("/api", libraryRoutes);
+app.use("/api", commentRoutes);
 
+// Vérification de connexion des routes
 console.log("Routes /api/user et /api/book chargées avec succès.");
 console.log("Route /api/library chargée avec succès.");
-
+// Démarrage du serveur
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
