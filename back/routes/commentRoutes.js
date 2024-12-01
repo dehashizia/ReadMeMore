@@ -10,7 +10,4 @@ router.get("/books/:bookId/comments", CommentController.getCommentsByBook);
 // Supprimer un commentaire
 router.delete("/comments/:commentId", CommentController.deleteComment);
 
-// Modifier un commentaire
-router.put("/comments/:commentId", CommentController.updateComment);
-
 module.exports = router;

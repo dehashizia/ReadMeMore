@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
-import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon } from "@heroicons/react/24/solid";
+import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, TrashIcon } from "@heroicons/react/24/solid";
 
 interface Book {
   book_id: string;
@@ -111,6 +111,27 @@ export default function Details() {
       }
     } catch (error) {
       console.error("Erreur lors de l'ajout du livre :", error);
+    }
+  };
+  const handleDeleteComment = async (comment_id: number) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(`${API_BASE_URL}/api/comments/${comment_id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken || "",
+        },
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        setComments((prevComments) => prevComments.filter((comment) => comment.comment_id !== comment_id));
+        alert("Commentaire supprimé avec succès !");
+      } else {
+        console.error("Erreur lors de la suppression du commentaire :", response.statusText);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression du commentaire :", error);
     }
   };
 
@@ -237,6 +258,10 @@ export default function Details() {
               <div key={comment.comment_id} className="mb-6">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-black">{comment.user.username}</span>
+                  <TrashIcon
+                    className="w-5 h-5 text-red-500 cursor-pointer hover:scale-110 transition-transform"
+                    onClick={() => handleDeleteComment(comment.comment_id)}
+                  />
                   <div className="flex space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <StarIcon
@@ -251,7 +276,7 @@ export default function Details() {
               </div>
             ))
           ) : (
-            <p className="text-gray-600">Aucun commentaire pour ce livre.</p>
+            <p className="text-gray-400">Aucun commentaire pour ce livre.</p>
           )}
         </div>
       </div>

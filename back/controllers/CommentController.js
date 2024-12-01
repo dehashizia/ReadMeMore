@@ -117,53 +117,8 @@ const deleteComment = async (req, res) => {
   }
 };
 
-// Modifier un commentaire
-const updateComment = async (req, res) => {
-  try {
-    const user = verifyToken(req);
-    const { commentId } = req.params;
-    const { text, rating } = req.body;
-
-    if (!text) {
-      return res
-        .status(400)
-        .json({ error: "Le texte du commentaire est requis." });
-    }
-
-    const comment = await Comment.findByPk(commentId);
-
-    if (!comment) {
-      return res.status(404).json({ error: "Commentaire non trouvé." });
-    }
-
-    if (comment.user_id !== user.userId) {
-      return res
-        .status(403)
-        .json({ error: "Non autorisé à modifier ce commentaire." });
-    }
-
-    if (rating && (rating < 1 || rating > 5)) {
-      return res
-        .status(400)
-        .json({ error: "La note doit être comprise entre 1 et 5." });
-    }
-
-    comment.text = text;
-    comment.rating = rating;
-    await comment.save();
-
-    res
-      .status(200)
-      .json({ message: "Commentaire mis à jour avec succès.", comment });
-  } catch (error) {
-    console.error("Erreur lors de la modification du commentaire :", error);
-    res.status(500).json({ error: "Une erreur s'est produite." });
-  }
-};
-
 module.exports = {
   addComment,
   getCommentsByBook,
   deleteComment,
-  updateComment,
 };

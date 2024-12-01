@@ -169,7 +169,8 @@ export default function MyLibrary() {
   };
 
   return (
-    <main    >
+    <main  className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
+    style={{ backgroundImage: "url('/b.webp')" }}   >
       {/* Header */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">
         <Link href="/profile">
