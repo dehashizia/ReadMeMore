@@ -116,9 +116,25 @@ const deleteComment = async (req, res) => {
     res.status(500).json({ error: "Une erreur s'est produite." });
   }
 };
+const getAllComments = async (req, res) => {
+  try {
+    const comments = await Comment.findAll({
+      include: [
+        { model: User, as: "user", attributes: ["username"] },
+        { model: Book, as: "book", attributes: ["title", "thumbnail"] },
+      ],
+      order: [["date", "DESC"]], // Trier par date décroissante
+    });
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des commentaires :", error);
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+};
 
 module.exports = {
   addComment,
   getCommentsByBook,
   deleteComment,
+  getAllComments,
 };

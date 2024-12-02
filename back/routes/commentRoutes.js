@@ -9,5 +9,6 @@ router.post("/books/:bookId/comments", CommentController.addComment);
 router.get("/books/:bookId/comments", CommentController.getCommentsByBook);
 // Supprimer un commentaire
 router.delete("/comments/:commentId", CommentController.deleteComment);
+router.get("/comments", CommentController.getAllComments);
 
 module.exports = router;

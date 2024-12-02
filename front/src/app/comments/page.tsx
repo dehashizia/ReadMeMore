@@ -7,11 +7,17 @@ import { StarIcon, UserIcon } from "@heroicons/react/24/solid";
 
 interface Comment {
   comment_id: number;
-  book: { title: string }; // Relation avec le livre
-  user: { username: string }; // Relation avec l'utilisateur
+  book: { 
+    book_id: string; 
+    title: string;
+    thumbnail?: string; // Ajout de la propriété 'thumbnail' pour l'image
+  };
+  user: { username: string };
   text: string;
-  date: string; // Date du commentaire
+  date: string;
+  rating: number;
 }
+
 export default function Comments() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
@@ -30,18 +36,7 @@ export default function Comments() {
   }, []);
 
   useEffect(() => {
-    const fetchCsrfToken = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/api/csrf-token`, {
-          withCredentials: true,
-        });
-        setCsrfToken(response.data.csrfToken);
-      } catch (error) {
-        console.error("Erreur lors de la récupération du token CSRF :", error);
-      }
-    };
-
-    const fetchAllComments = async () => {
+    const fetchComments = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/comments`);
         setComments(response.data);
@@ -49,57 +44,48 @@ export default function Comments() {
         console.error("Erreur lors de la récupération des commentaires :", error);
       }
     };
-
-    fetchCsrfToken();
-    fetchAllComments();
+    fetchComments();
   }, [API_BASE_URL]);
 
-  if (!isAuthenticated) {
-    return <div>Chargement...</div>;
-  }
-
   return (
-    <main className="min-h-screen flex flex-col items-center p-6">
-      <div className="w-full max-w-4xl bg-white shadow-xl p-8 rounded-lg">
-        <h1 className="text-2xl font-semibold mb-4">Tous les commentaires</h1>
-        <div className="flex space-x-4 mb-6">
-          <Link href="/profile">
-            <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
-          </Link>
-          <Link href="/search">
-            <button type="button" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition">
-              Retour à la recherche
-            </button>
-          </Link>
-        </div>
+    <main className="min-h-screen p-6 flex flex-col items-center justify-between">
+      <div className="w-full max-w-xl bg-gray-100 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-medium mb-4 text-black">Actus</h2>
         {comments.length > 0 ? (
-          <ul className="space-y-6">
-            {comments.map((comment) => (
-              <li key={comment.comment_id} className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-                <div className="flex items-center space-x-2 mb-2">
-                  <UserIcon className="w-6 h-6 text-gray-500" />
-                  <span className="text-sm text-gray-600">{comment.user.username}</span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(comment.date).toLocaleDateString()}
-                  </span>
+          comments.map((comment) => (
+            <div key={comment.comment_id} className="mb-6 flex items-center space-x-4">
+              {/* Affichage de l'image de couverture */}
+              {comment.book.thumbnail && (
+                <img
+                  src={comment.book.thumbnail}
+                  alt={`Couverture de ${comment.book.title}`}
+                  className="w-16 h-24 object-cover rounded-lg"
+                />
+              )}
+              
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-black">{comment.user.username} parle de ce livre : </span>
+                  <p className="mt-2 text-sm text-black">  {comment.book.title}</p>
+                
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <StarIcon
+                        key={star}
+                        className={`w-4 h-4 ${comment.rating && comment.rating >= star ? "text-yellow-400" : "text-gray-400"}`}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <p className="text-gray-700 mb-2">{comment.book.title}</p>
-                <div className="flex space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <StarIcon
-                      key={star}
-                      className={`w-5 h-5 ${star <= comment.rating ? "text-yellow-500" : "text-gray-300"}`}
-                    />
-                  ))}
-                </div>
-                <Link href={`/books/${comment.book_id}`}>
-                  <button type="button" className="mt-2 text-blue-500 hover:underline">Voir le livre</button>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                <p className="mt-2 text-sm text-black">{comment.text}</p>
+                <span className="text-xs text-black">{new Date(comment.date).toLocaleDateString()}</span>
+              </div>
+
+             
+            </div>
+          ))
         ) : (
-          <p className="text-gray-500">Aucun commentaire pour le moment.</p>
+          <p className="text-gray-400">Aucun commentaire pour ce livre.</p>
         )}
       </div>
     </main>
