@@ -49,6 +49,7 @@ exports.register = async (req, res) => {
       username,
       email: lowercaseEmail,
       password: hashedPassword,
+      emailConfirmed: false,
     });
 
     // Création d'un token de confirmation
@@ -233,6 +234,7 @@ exports.confirmEmail = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
 
+    // Recherche de l'utilisateur par son ID
     const user = await User.findOne({ where: { user_id: userId } });
 
     if (!user) {
@@ -240,6 +242,11 @@ exports.confirmEmail = async (req, res) => {
     }
 
     // Mettre à jour l'utilisateur pour marquer l'email comme confirmé
+    if (user.emailConfirmed) {
+      return res
+        .status(400)
+        .json({ error: "L'adresse email a déjà été confirmée" });
+    }
     user.emailConfirmed = true;
     await user.save();
 
