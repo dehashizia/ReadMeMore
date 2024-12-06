@@ -20,6 +20,11 @@ const Book = sequelize.define(
     thumbnail: { type: DataTypes.STRING },
     language: { type: DataTypes.STRING },
     barcode: { type: DataTypes.STRING(100), unique: true },
+    is_available_for_loan: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   },
   {
     tableName: "book",
