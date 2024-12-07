@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database");
 const Category = require("./Category");
+const User = require("./User"); // Assurez-vous d'importer User après l'avoir défini
 
 const Book = sequelize.define(
   "Book",
@@ -25,6 +26,10 @@ const Book = sequelize.define(
       defaultValue: false,
       allowNull: false,
     },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "book",
@@ -33,5 +38,6 @@ const Book = sequelize.define(
 );
 
 Book.belongsTo(Category, { foreignKey: "category_id", as: "category" });
+Book.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 module.exports = Book;

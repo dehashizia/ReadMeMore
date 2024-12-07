@@ -17,6 +17,7 @@ interface Book {
 const AvailableBooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,13 +40,24 @@ const AvailableBooksPage = () => {
   }, [API_BASE_URL]);
 
   useEffect(() => {
+    // Récupération du token d'authentification dans le localStorage
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      setToken(storedToken);
+    }
+  }, []);
+
+  useEffect(() => {
     const fetchAvailableBooks = async () => {
-      if (!csrfToken) return; // Attente du csrfToken avant de faire la requête
+      if (!csrfToken || !token) return; // Attente du csrfToken et token d'authentification
 
       setIsLoading(true);
       try {
         const response = await axios.get<Book[]>(`${API_BASE_URL}/api/books/available`, {
-          headers: { "X-CSRF-Token": csrfToken },
+          headers: {
+            "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
+            "X-CSRF-Token": csrfToken, // En-tête CSRF token
+          },
           withCredentials: true,
         });
         setBooks(response.data);
@@ -57,14 +69,14 @@ const AvailableBooksPage = () => {
       }
     };
 
-    if (csrfToken) {
+    if (csrfToken && token) {
       fetchAvailableBooks();
     }
-  }, [csrfToken, API_BASE_URL]);
+  }, [csrfToken, token, API_BASE_URL]);
 
   const requestLoan = async (bookId: number) => {
-    if (!csrfToken) {
-      setError("Le token CSRF est requis.");
+    if (!csrfToken || !token) {
+      setError("Le token CSRF et le token d'authentification sont requis.");
       return;
     }
 
@@ -73,7 +85,10 @@ const AvailableBooksPage = () => {
         `${API_BASE_URL}/api/loans/request`,
         { bookId },
         {
-          headers: { "X-CSRF-Token": csrfToken },
+          headers: {
+            "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
+            "X-CSRF-Token": csrfToken, // En-tête CSRF token
+          },
           withCredentials: true,
         }
       );
@@ -87,7 +102,7 @@ const AvailableBooksPage = () => {
   return (
     <div>
       <h1>Livres disponibles pour prêt</h1>
-      
+
       {/* Affichage de l'état de chargement ou d'erreur */}
       {isLoading && <p>Chargement des livres...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -99,7 +114,8 @@ const AvailableBooksPage = () => {
         <h2>{book.title}</h2>
         <p>Auteur(s): {book.authors.join(", ")}</p>
         <p>
-          Mis à disposition par: {book.user ? book.user.username : "Utilisateur inconnu"}
+          Mis à disposition par:{" "}
+          {book.user ? book.user.username : "Utilisateur inconnu"}
         </p>
         <button type="button" onClick={() => requestLoan(book.book_id)}>
           Faire une demande de prêt

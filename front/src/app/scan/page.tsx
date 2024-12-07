@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 export default function ScanPage() {
+  const [token, setToken] = useState<string | null>(null);
   const [isbn, setIsbn] = useState<string>("");
   const [book, setBook] = useState<{
     book_id: number;
@@ -32,14 +33,29 @@ export default function ScanPage() {
     fetchCsrfToken();
   }, [API_BASE_URL]);
 
+  useEffect(() => {
+    // S'assurer que le code s'exécute côté client avant d'utiliser localStorage
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      console.log("Token récupéré :", storedToken); 
+      setToken(storedToken);
+    }
+  }, []);
+
   const fetchBook = useCallback(async () => {
     if (!isbn.trim()) return;
+
+    if (!token) {
+      console.error("Token manquant, l'utilisateur n'est pas authentifié.");
+      return;
+    }
 
     try {
       // Recherche dans la base de données
       const dbResponse = await axios.get(`${API_BASE_URL}/api/books/isbn/${isbn.trim()}`, {
         headers: {
-          "X-CSRF-Token": csrfToken || "",
+          "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
+          "X-CSRF-Token": csrfToken || "", // Inclure le CSRF token si nécessaire
         },
         withCredentials: true,
       });
@@ -56,7 +72,8 @@ export default function ScanPage() {
       // Fallback sur l'API Google Books
       const googleResponse = await axios.get(`${API_BASE_URL}/api/google-books/isbn/${isbn.trim()}`, {
         headers: {
-          "X-CSRF-Token": csrfToken || "",
+          "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
+          "X-CSRF-Token": csrfToken || "", // Inclure le CSRF token si nécessaire
         },
         withCredentials: true,
       });
@@ -70,15 +87,20 @@ export default function ScanPage() {
       console.error("Erreur lors de la récupération du livre :", error);
       setBook(null);
     }
-  }, [isbn, csrfToken, API_BASE_URL]);
+  }, [isbn, csrfToken, token, API_BASE_URL]);
 
   const makeBookAvailable = async (bookId: number) => {
+    if (!token) {
+      console.error("Token manquant, l'utilisateur n'est pas authentifié.");
+      return;
+    }
     try {
       await axios.patch(
         `${API_BASE_URL}/api/${bookId}/make-available`,
         {},
         {
           headers: {
+            "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
             "X-CSRF-Token": csrfToken || "",
           },
           withCredentials: true,

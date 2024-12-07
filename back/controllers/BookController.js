@@ -3,8 +3,23 @@ const { Op } = require("sequelize");
 const Book = require("../models/Book");
 const Category = require("../models/Category");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 const GOOGLE_BOOKS_API_KEY = process.env.GOOGLE_BOOKS_API_KEY;
+const verifyToken = (req) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    throw new Error("Authentification requise.");
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Token décodé :", decoded); // Ajoutez ce log pour déboguer
+    return decoded;
+  } catch (error) {
+    throw new Error("Token invalide.");
+  }
+};
 
 const searchBooks = async (req, res) => {
   const { query } = req.query;
@@ -121,11 +136,18 @@ const getBookDetails = async (req, res) => {
     try {
       const availableBooks = await Book.findAll({
         where: { is_available_for_loan: true }, // Assume que le champ est un booléen
-        include: {
-          model: Category,
-          as: "category",
-          attributes: ["category_name"],
-        },
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["category_name"],
+          },
+          {
+            model: User,
+            as: "user", // Assurez-vous d'inclure l'utilisateur
+            attributes: ["username"],
+          },
+        ],
       });
 
       if (availableBooks.length === 0) {
@@ -188,10 +210,50 @@ const getBookDetails = async (req, res) => {
   }
 };
 // Nouvelle méthode pour le scan par ISBN
+
+const markBookAsAvailable = async (req, res) => {
+  const { bookId } = req.params;
+
+  try {
+    const user = verifyToken(req);
+    const userId = user.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "Utilisateur non connecté" });
+    }
+
+    const book = await Book.findByPk(bookId);
+    if (!book) {
+      return res.status(404).json({ error: "Livre non trouvé" });
+    }
+
+    book.is_available_for_loan = true;
+    book.user_id = userId;
+    await book.save();
+
+    const userWhoAddedBook = await User.findOne({
+      where: { user_id: book.user_id },
+    });
+
+    res.json({
+      message: "Livre marqué comme disponible pour prêt.",
+      userWhoAddedBook: userWhoAddedBook
+        ? userWhoAddedBook.username
+        : "Inconnu", // Retourner le nom de l'utilisateur qui a ajouté le livre
+    });
+  } catch (error) {
+    console.error("Erreur :", error);
+    res.status(500).json({ error: "Une erreur est survenue." });
+  }
+};
+
 const scanBookByIsbn = async (req, res) => {
   const { isbn } = req.params;
 
   try {
+    // Vérifier le token JWT pour récupérer l'utilisateur connecté
+    const user = verifyToken(req);
+
     // Recherche dans la base de données
     const existingBook = await Book.findOne({
       where: { isbn },
@@ -253,29 +315,28 @@ const scanBookByIsbn = async (req, res) => {
     res.status(500).json({ error: "Une erreur est survenue." });
   }
 };
-const markBookAsAvailable = async (req, res) => {
-  const { bookId } = req.params;
 
-  try {
-    const book = await Book.findByPk(bookId);
-    if (!book) return res.status(404).json({ error: "Livre non trouvé" });
-
-    book.is_available_for_loan = true;
-    await book.save();
-
-    res.json({ message: "Livre marqué comme disponible pour prêt." });
-  } catch (error) {
-    console.error("Erreur :", error);
-    res.status(500).json({ error: "Une erreur est survenue." });
-  }
-};
 const getAvailableBooks = async (req, res) => {
   try {
     const books = await Book.findAll({
-      where: { is_available_for_loan: true }, // Vérifie la colonne correspondante
-      attributes: ["book_id", "title", "authors"],
+      where: { is_available_for_loan: true },
+      include: [
+        {
+          model: User,
+          as: "user", // Assurez-vous que "user" correspond au nom d'alias défini dans Book.belongsTo
+          attributes: ["username"], // Récupérer uniquement le champ username
+        },
+      ],
+      attributes: ["book_id", "title", "authors"], // Champs à inclure pour le modèle Book
     });
-    res.json(books);
+
+    // Ajouter l'utilisateur qui a mis le livre en prêt
+    const booksWithUser = books.map((book) => ({
+      ...book.toJSON(),
+      user: book.user ? book.user.username : "Utilisateur inconnu", // On inclut l'utilisateur associé si existant
+    }));
+
+    res.json(booksWithUser);
   } catch (error) {
     console.error(
       "Erreur lors de la récupération des livres disponibles :",
