@@ -12,9 +12,9 @@ import {
   CheckCircleIcon,
   HeartIcon,
   TrashIcon,
-  ArrowPathIcon,
+  ArrowPathIcon, 
 } from "@heroicons/react/24/solid";
-import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaLinkedin,FaQrcode, FaArrowAltCircleRight  } from 'react-icons/fa';
 import axios from "axios";
 
 interface Book {
@@ -174,14 +174,23 @@ export default function MyLibrary() {
       {/* Header */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">
         <Link href="/profile">
-          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
         <Link href="/search">
-          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
         <Link href="/about">
-          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
+        {/* Icône de prêt */}
+      <Link href="/available-books">
+        <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
+      
+      {/* Icône de scan */}
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       </div>
 
       {/* Title Section */}

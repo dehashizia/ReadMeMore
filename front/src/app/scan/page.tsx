@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
+import { UserIcon, BookOpenIcon, MagnifyingGlassIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
+import Link from "next/link";
 
 export default function ScanPage() {
   const [token, setToken] = useState<string | null>(null);
@@ -34,7 +38,6 @@ export default function ScanPage() {
   }, [API_BASE_URL]);
 
   useEffect(() => {
-    // S'assurer que le code s'exécute côté client avant d'utiliser localStorage
     if (typeof window !== "undefined") {
       const storedToken = localStorage.getItem("token");
       console.log("Token récupéré :", storedToken); 
@@ -51,11 +54,10 @@ export default function ScanPage() {
     }
 
     try {
-      // Recherche dans la base de données
       const dbResponse = await axios.get(`${API_BASE_URL}/api/books/isbn/${isbn.trim()}`, {
         headers: {
-          "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
-          "X-CSRF-Token": csrfToken || "", // Inclure le CSRF token si nécessaire
+          "Authorization": `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken || "",
         },
         withCredentials: true,
       });
@@ -69,11 +71,10 @@ export default function ScanPage() {
     }
 
     try {
-      // Fallback sur l'API Google Books
       const googleResponse = await axios.get(`${API_BASE_URL}/api/google-books/isbn/${isbn.trim()}`, {
         headers: {
-          "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
-          "X-CSRF-Token": csrfToken || "", // Inclure le CSRF token si nécessaire
+          "Authorization": `Bearer ${token}`,
+          "X-CSRF-Token": csrfToken || "",
         },
         withCredentials: true,
       });
@@ -100,7 +101,7 @@ export default function ScanPage() {
         {},
         {
           headers: {
-            "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
+            "Authorization": `Bearer ${token}`,
             "X-CSRF-Token": csrfToken || "",
           },
           withCredentials: true,
@@ -114,6 +115,29 @@ export default function ScanPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      
+      {/* Header Icons */}
+      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+        <Link href="/profile">
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/my-library">
+          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/about">
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/available-books">
+          <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/scan">
+          <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+      </div>
+
       <h1 className="text-2xl text-black font-bold mb-4">Rechercher un livre par ISBN</h1>
       <input
         type="text"
@@ -148,6 +172,35 @@ export default function ScanPage() {
       ) : (
         <p className="mt-8 text-red-500">Aucun livre trouvé pour cet ISBN.</p>
       )}
+{/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+          <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+          <ul className="flex space-x-6">
+            <li>
+              <a href="/legal" className="hover:underline">
+                Mentions légales
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" className="hover:underline">
+                Politique de confidentialité
+              </a>
+            </li>
+          </ul>
+          <div className="flex space-x-6">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <FaGithub className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+              <FaTwitter className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin className="w-6 h-6 text-white" />
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
 import {
   UserIcon,
   BookOpenIcon,
@@ -138,6 +139,16 @@ export default function Search() {
         <Link href="/about">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
+        {/* Icône de prêt */}
+      
+
+        <Link href="/available-books">
+          <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        {/* Icône de scan */}
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       </div>
 
       {/* Logo and title */}

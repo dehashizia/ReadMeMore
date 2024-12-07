@@ -14,7 +14,7 @@ const verifyToken = (req) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Token décodé :", decoded); // Ajoutez ce log pour déboguer
+    console.log("Token décodé :", decoded);
     return decoded;
   } catch (error) {
     throw new Error("Token invalide.");
