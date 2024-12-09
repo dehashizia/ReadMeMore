@@ -79,20 +79,20 @@ const AvailableBooksPage = () => {
     }
   }, [csrfToken, token, API_BASE_URL]);
 
-  const requestLoan = async (bookId: number) => {
+  const requestLoan = async (bookId: number, username: string)=> {
     if (!csrfToken || !token) {
       setError("Le token CSRF et le token d'authentification sont requis.");
       return;
     }
-
+  
     try {
       await axios.post(
         `${API_BASE_URL}/api/loans/request`,
-        { bookId },
+        { bookId, username }, 
         {
           headers: {
-            "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête Authorization
-            "X-CSRF-Token": csrfToken, // En-tête CSRF token
+            "Authorization": `Bearer ${token}`,
+            "X-CSRF-Token": csrfToken,
           },
           withCredentials: true,
         }
@@ -164,7 +164,7 @@ const AvailableBooksPage = () => {
               </p>
               <button
                 type="button"
-                onClick={() => requestLoan(book.book_id)}
+                onClick={() => requestLoan(book.book_id, book.user?.username || "Inconnu")}
                 className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition"
               >
                 Faire une demande de prêt

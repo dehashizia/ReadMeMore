@@ -4,38 +4,46 @@ const User = require("./User");
 const Book = require("./Book");
 
 const LoanRequest = sequelize.define(
-  "LoanRequest",
+  "loan_request",
   {
-    loan_request_id: {
+    request_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    requester_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     book_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: Book,
+        key: "book_id",
+      },
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: User,
+        key: "user_id",
+      },
     },
     status: {
-      type: DataTypes.STRING(20),
-      defaultValue: "pending", // Par défaut, la demande est en attente
-      allowNull: false,
+      type: DataTypes.STRING,
+      defaultValue: "En attente",
     },
-    created_at: {
+    request_date: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
   },
   {
     tableName: "loan_request",
+    freezeTableName: true,
     timestamps: false,
   }
 );
 
-LoanRequest.belongsTo(User, { foreignKey: "requester_id", as: "requester" });
-LoanRequest.belongsTo(Book, { foreignKey: "book_id", as: "book" });
+LoanRequest.belongsTo(Book, { foreignKey: "book_id" });
+LoanRequest.belongsTo(User, { foreignKey: "user_id" });
 
 module.exports = LoanRequest;

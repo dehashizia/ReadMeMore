@@ -50,3 +50,12 @@ CREATE TABLE comment (
     FOREIGN KEY (user_id) REFERENCES "user"(user_id),
     FOREIGN KEY (book_id) REFERENCES book(book_id)
 );
+CREATE TABLE loan_request (
+  request_id SERIAL PRIMARY KEY,
+  book_id INTEGER NOT NULL,
+  user_id INTEGER,
+  status VARCHAR(255) DEFAULT 'En attente',
+  request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE SET NULL
+);
