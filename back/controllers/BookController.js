@@ -388,9 +388,9 @@ const getLoanRequests = async (req, res) => {
       return res.status(401).json({ error: "Utilisateur non authentifié" });
     }
 
-    // Récupérer les demandes de prêt de l'utilisateur connecté
-    const loanRequests = await LoanRequest.findAll({
-      where: { user_id: user.userId }, // ID de l'utilisateur connecté
+    // Récupérer les demandes envoyées par l'utilisateur (demandes d'emprunt)
+    const sentRequests = await LoanRequest.findAll({
+      where: { user_id: user.userId },
       include: [
         {
           model: Book,
@@ -407,19 +407,89 @@ const getLoanRequests = async (req, res) => {
         {
           model: User,
           as: "RequestingUser", // Utilisateur ayant fait la demande
-          attributes: ["username"], // Facultatif si vous voulez confirmer que c'est l'utilisateur connecté
+          attributes: ["username"],
         },
       ],
       attributes: ["request_id", "status", "request_date"],
     });
 
-    res.json(loanRequests);
+    // Récupérer les demandes reçues par l'utilisateur (livres qu'il a mis en prêt)
+    const receivedRequests = await LoanRequest.findAll({
+      where: {
+        book_id: {
+          [Op.ne]: null, // S'assure que book_id est valide (non null)
+        },
+      },
+      include: [
+        {
+          model: Book,
+          as: "Book",
+          attributes: ["title", "authors", "thumbnail", "user_id"],
+          where: {
+            user_id: user.userId, // Vérifie que l'utilisateur est bien le propriétaire du livre
+          },
+          include: [
+            {
+              model: User,
+              as: "user",
+              attributes: ["username"],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "RequestingUser", // Utilisateur ayant fait la demande
+          attributes: ["username"],
+        },
+      ],
+      attributes: ["request_id", "status", "request_date"],
+    });
+
+    // Retourner les deux ensembles de données
+    res.json({ sentRequests, receivedRequests });
   } catch (error) {
     console.error(
       "Erreur lors de la récupération des demandes de prêt :",
       error
     );
     res.status(500).json({ error: "Une erreur est survenue." });
+  }
+};
+const updateLoanRequestStatus = async (req, res) => {
+  const { requestId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Vérification du token (utilisation de la même méthode que pour getLoanRequests)
+    const user = verifyToken(req); // Vérifie et extrait l'utilisateur connecté
+
+    if (!user) {
+      return res.status(401).json({ error: "Utilisateur non authentifié" });
+    }
+
+    const loanRequest = await LoanRequest.findByPk(requestId);
+
+    if (!loanRequest) {
+      return res.status(404).json({ error: "Demande de prêt non trouvée." });
+    }
+
+    // Mettre à jour le statut de la demande
+    loanRequest.status = status;
+    await loanRequest.save();
+
+    // Mettre à jour la disponibilité du livre si accepté
+    if (status === "Accepté") {
+      const book = await Book.findByPk(loanRequest.book_id);
+      if (book) {
+        book.is_available_for_loan = false;
+        await book.save();
+      }
+    }
+
+    res.status(200).json({ message: "Statut de la demande mis à jour." });
+  } catch (err) {
+    console.error("Erreur lors de la mise à jour de la demande de prêt :", err);
+    res.status(500).json({ error: "Erreur interne du serveur." });
   }
 };
 module.exports = {
@@ -430,4 +500,5 @@ module.exports = {
   getAvailableBooks,
   requestLoan,
   getLoanRequests,
+  updateLoanRequestStatus,
 };

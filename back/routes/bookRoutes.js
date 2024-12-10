@@ -11,4 +11,10 @@ router.get("/books/available", BookController.getAvailableBooks);
 router.post("/loans/request", BookController.requestLoan);
 router.get("/loans/requests", BookController.getLoanRequests);
 
+// Si tu veux aussi ajouter la route pour accepter ou refuser une demande de prêt
+router.put(
+  "/loans/requests/:requestId",
+  BookController.updateLoanRequestStatus
+);
+
 module.exports = router;
