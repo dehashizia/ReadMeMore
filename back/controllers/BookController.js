@@ -132,10 +132,12 @@ const searchBooks = async (req, res) => {
 const getBookDetails = async (req, res) => {
   const { bookId } = req.params;
 
+  // Vérifier si bookId est une valeur valide
   if (bookId === "available") {
+    // Si "available" est passé, chercher les livres disponibles
     try {
       const availableBooks = await Book.findAll({
-        where: { is_available_for_loan: true },
+        where: { is_available_for_loan: true }, // Assume que le champ est un booléen
         include: [
           {
             model: Category,
@@ -144,7 +146,7 @@ const getBookDetails = async (req, res) => {
           },
           {
             model: User,
-            as: "user",
+            as: "user", // Assurez-vous d'inclure l'utilisateur
             attributes: ["username"],
           },
         ],
@@ -156,6 +158,7 @@ const getBookDetails = async (req, res) => {
           .json({ error: "Aucun livre disponible trouvé." });
       }
 
+      // Retourner les livres disponibles
       res.json(
         availableBooks.map((book) => ({
           ...book.toJSON(),
@@ -175,9 +178,10 @@ const getBookDetails = async (req, res) => {
       });
     }
   } else {
+    // Si c'est un bookId normal, rechercher par book_id
     try {
       const book = await Book.findOne({
-        where: { book_id: bookId },
+        where: { book_id: bookId }, // Ici, bookId doit être un entier
         include: {
           model: Category,
           as: "category",
@@ -207,6 +211,7 @@ const getBookDetails = async (req, res) => {
     }
   }
 };
+// Nouvelle méthode pour le scan par ISBN
 
 const markBookAsAvailable = async (req, res) => {
   const { bookId } = req.params;
@@ -236,7 +241,7 @@ const markBookAsAvailable = async (req, res) => {
       message: "Livre marqué comme disponible pour prêt.",
       userWhoAddedBook: userWhoAddedBook
         ? userWhoAddedBook.username
-        : "Inconnu",
+        : "Inconnu", // Retourner le nom de l'utilisateur qui a ajouté le livre
     });
   } catch (error) {
     console.error("Erreur :", error);
@@ -248,8 +253,10 @@ const scanBookByIsbn = async (req, res) => {
   const { isbn } = req.params;
 
   try {
+    // Vérifier le token JWT pour récupérer l'utilisateur connecté
     const user = verifyToken(req);
 
+    // Recherche dans la base de données
     const existingBook = await Book.findOne({
       where: { isbn },
       include: {
@@ -269,6 +276,7 @@ const scanBookByIsbn = async (req, res) => {
       });
     }
 
+    // Si non trouvé, recherche via l'API Google Books
     const googleBooksResponse = await axios.get(
       `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${GOOGLE_BOOKS_API_KEY}`
     );
@@ -317,16 +325,17 @@ const getAvailableBooks = async (req, res) => {
       include: [
         {
           model: User,
-          as: "user",
-          attributes: ["username"],
+          as: "user", // Assurez-vous que "user" correspond au nom d'alias défini dans Book.belongsTo
+          attributes: ["username"], // Récupérer uniquement le champ username
         },
       ],
-      attributes: ["book_id", "title", "authors"],
+      attributes: ["book_id", "title", "authors"], // Champs à inclure pour le modèle Book
     });
 
+    // Ajouter l'utilisateur qui a mis le livre en prêt
     const booksWithUser = books.map((book) => ({
       ...book.toJSON(),
-      user: book.user ? book.user.username : "Utilisateur inconnu",
+      user: book.user ? book.user.username : "Utilisateur inconnu", // On inclut l'utilisateur associé si existant
     }));
 
     res.json(booksWithUser);
@@ -340,13 +349,14 @@ const getAvailableBooks = async (req, res) => {
 };
 const requestLoan = async (req, res) => {
   const { bookId } = req.body;
-  const user = verifyToken(req);
+  const user = verifyToken(req); // Vérifie le token de l'utilisateur
 
   if (!bookId) {
     return res.status(400).json({ error: "ID du livre requis" });
   }
 
   try {
+    // Vérification que le livre existe et est disponible
     const book = await Book.findOne({
       where: { book_id: bookId, is_available_for_loan: true },
     });
@@ -357,10 +367,11 @@ const requestLoan = async (req, res) => {
         .json({ error: "Livre non disponible pour le prêt" });
     }
 
+    // Créer la demande de prêt
     const loanRequest = await LoanRequest.create({
       book_id: bookId,
       user_id: user.userId,
-      status: "En attente",
+      status: "En attente", // Peut-être "acceptée", "refusée" selon ton système
     });
 
     res.status(201).json({ message: "Demande de prêt envoyée", loanRequest });
@@ -371,52 +382,44 @@ const requestLoan = async (req, res) => {
 };
 const getLoanRequests = async (req, res) => {
   try {
-    const user = verifyToken(req);
-    const userId = user.userId;
+    const user = verifyToken(req); // Vérifie et extrait l'utilisateur connecté
 
-    if (!userId) {
-      return res.status(400).json({ error: "Utilisateur non connecté." });
+    if (!user) {
+      return res.status(401).json({ error: "Utilisateur non authentifié" });
     }
 
+    // Récupérer les demandes de prêt de l'utilisateur connecté
     const loanRequests = await LoanRequest.findAll({
-      where: { user_id: userId },
+      where: { user_id: user.userId }, // ID de l'utilisateur connecté
       include: [
         {
           model: Book,
-          attributes: ["book_id", "title", "authors", "thumbnail"],
+          as: "Book",
+          attributes: ["title", "authors", "thumbnail", "user_id"],
+          include: [
+            {
+              model: User,
+              as: "user", // Propriétaire du livre
+              attributes: ["username"],
+            },
+          ],
         },
         {
           model: User,
-          attributes: ["username"],
+          as: "RequestingUser", // Utilisateur ayant fait la demande
+          attributes: ["username"], // Facultatif si vous voulez confirmer que c'est l'utilisateur connecté
         },
       ],
+      attributes: ["request_id", "status", "request_date"],
     });
 
-    if (loanRequests.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Aucune demande de prêt trouvée." });
-    }
-
-    res.json(
-      loanRequests.map((request) => ({
-        ...request.toJSON(),
-        book: request.book ? request.book.title : "Livre inconnu",
-        requestedBy: request.user
-          ? request.user.username
-          : "Utilisateur inconnu",
-        status: request.status,
-      }))
-    );
+    res.json(loanRequests);
   } catch (error) {
     console.error(
       "Erreur lors de la récupération des demandes de prêt :",
       error
     );
-    res.status(500).json({
-      error:
-        "Une erreur s'est produite lors de la récupération des demandes de prêt.",
-    });
+    res.status(500).json({ error: "Une erreur est survenue." });
   }
 };
 module.exports = {

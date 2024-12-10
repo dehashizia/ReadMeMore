@@ -4,7 +4,7 @@ const User = require("./User");
 const Book = require("./Book");
 
 const LoanRequest = sequelize.define(
-  "loan_request",
+  "loan_request", // Nom du modèle
   {
     request_id: {
       type: DataTypes.INTEGER,
@@ -29,7 +29,7 @@ const LoanRequest = sequelize.define(
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: "En attente",
+      defaultValue: "En attente", // La demande est par défaut "En attente"
     },
     request_date: {
       type: DataTypes.DATE,
@@ -37,13 +37,14 @@ const LoanRequest = sequelize.define(
     },
   },
   {
-    tableName: "loan_request",
-    freezeTableName: true,
-    timestamps: false,
+    tableName: "loan_request", // Nom exact de la table dans la base de données
+    freezeTableName: true, // Empêche Sequelize de pluraliser automatiquement
+    timestamps: false, // Désactive les colonnes createdAt et updatedAt
   }
 );
 
+// Associations
 LoanRequest.belongsTo(Book, { foreignKey: "book_id" });
-LoanRequest.belongsTo(User, { foreignKey: "user_id" });
+LoanRequest.belongsTo(User, { foreignKey: "user_id", as: "RequestingUser" });
 
 module.exports = LoanRequest;
