@@ -6,6 +6,8 @@
 - `username` : string
 - `email` : string
 - `password` : string (stored securely)
+- `emailConfirmed` : boolean (default: false)
+- `profile_photo` : string (nullable, default: null)
 
 ## Role
 
@@ -17,7 +19,6 @@
 - `book_id` : int [PK]
 - `title` : string
 - `authors` : string[] (tableau de plusieurs auteurs)
-- `category_id` : int [FK] (reference to Category)
 - `published_date` : date
 - `description` : text
 - `isbn` : string (unique identifier)
@@ -25,6 +26,7 @@
 - `thumbnail` : string (URL of the book cover)
 - `language` : string
 - `barcode` : string (for scanning)
+- `is_available_for_loan` : boolean (default: false)
 
 ## Library
 
@@ -41,6 +43,13 @@
 - `comment_id` : int [PK]
 - `text` : string
 - `date` : date
+- `rating` : int (nullable)
+
+## Loan Request
+
+- `request_id` : int [PK]
+- `status` : string (default: 'En attente')
+- `request_date` : timestamp (default: CURRENT_TIMESTAMP)
 
 # Relationships
 
@@ -50,18 +59,22 @@
 - **User 1 -- N Comment** : A user can leave multiple comments.
 - **Role 1 -- N User** : A role can be associated with multiple users.
 - **Category 1 -- N Book** : A category can have multiple books.
+- **User 1 -- N Loan Request** : A user can make multiple loan requests.
+- **Book 1 -- N Loan Request** : A book can be associated with multiple loan requests.
 
-
-USER: user_id, username, email, password
+USER: user_id, username, email, password, emailConfirmed, profile_photo
 ROLE: role_id, role_name
-BOOK: book_id, title, authors, published_date, description, isbn, page_count, thumbnail, language, barcode
+BOOK: book_id, title, authors, published_date, description, isbn, page_count, thumbnail, language, barcode, is_available_for_loan
 LIBRARY: library_id, status
 CATEGORY: category_id, category_name
-COMMENT: comment_id, text, date
+COMMENT: comment_id, text, date, rating
+LOAN_REQUEST: request_id, status, request_date
 
 AVOIR, 1N USER, 0N LIBRARY
 EST_PRÉSENT_DANS, 1N BOOK, 0N LIBRARY
 RECEVOIR, 1N BOOK, 0N COMMENT
 ÉCRIRE, 1N USER, 0N COMMENT
 ASSOCIER, 1N ROLE, 0N USER
-GROUPE, 1N CATEGORY, 0N BOOK 
+GROUPE, 1N CATEGORY, 0N BOOK
+DEMANDER, 1N USER, 0N LOAN_REQUEST
+CONCERNER, 1N BOOK, 0N LOAN_REQUEST

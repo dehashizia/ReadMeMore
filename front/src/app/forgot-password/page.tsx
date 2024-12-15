@@ -55,9 +55,25 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex min-h-screen items-center justify-center ">
+       <div className="absolute top-0 right-0 h-full w-1/3">
+        <div
+          className="absolute top-0 right-0 w-full h-1/2 rounded-bl-full"
+          style={{
+            background: 'linear-gradient(to bottom, #6048b2, #18122f)',
+            clipPath: 'ellipse(70% 100% at 100% 0%)',
+          }}
+        />
+        <div
+          className="absolute top-1/2 right-0 w-full h-1/2"
+          style={{
+            background: 'linear-gradient(to top, #a57f60, #6e5b54)',
+            clipPath: 'ellipse(70% 100% at 100% 100%)',
+          }}
+        />
+      </div>
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">
-          Réinitialiser le mot de passe
+        Reset Password
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -80,7 +96,7 @@ export default function ForgotPassword() {
             type="submit"
             className="w-full py-2 px-4 bg-indigo-900 text-black font-semibold rounded-md shadow hover:bg-indigo-800 "
           >
-            Envoyer
+           Send
           </button>
         </form>
         {message && (

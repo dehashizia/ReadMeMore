@@ -23,21 +23,24 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center flex-grow text-center">
         <h1 className="text-black text-2xl sm:text-4xl font-bold mb-4"> 
           Welcome to app
-          <span className="text-orange-500">.</span>
-          <span className="text-white">.</span>
-          <span className="text-white">.</span>
-        </h1>
+          </h1>
+          <div className="flex justify-center space-x-1">
+          <span className="text-orange-500 text-4xl font-bold">.</span>
+          <span className="text-white text-4xl font-bold">.</span>
+          <span className="text-white text-4xl font-bold ">.</span>
+          </div>
+     
 
         <div className="flex items-center mt-4">
-          <h2 className="text-black text-3xl sm:text-5xl font-bold shadow-lg shadow-orange-500/50">
+          <h2 className="text-black text-3xl sm:text-5xl font-bold ">
             Read
           </h2>
           <img
             src="/logo.jpg"
             alt="Logo"
-            className="mx-2 w-12 h-12 sm:w-16 sm:h-16"
+            className=" mx-2 w-20 h-20 sm:w-24 sm:h-24  rounded-[20px]"
           />
-          <h2 className="text-black text-3xl sm:text-5xl font-bold shadow-lg shadow-orange-500/50">
+          <h2 className="text-black text-3xl sm:text-5xl font-bold ">
             eMore
           </h2>
         </div>

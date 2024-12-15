@@ -122,7 +122,7 @@ const LoanRequestsPage = () => {
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Section pour les demandes envoyées */}
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Demandes envoyées</h2>
+      <h2 className="text-2xl font-semibold text-blue-800 mb-4">Demandes envoyées</h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sentRequests.length > 0 ? (
           sentRequests.map((request) => (
@@ -174,7 +174,7 @@ const LoanRequestsPage = () => {
       </div>
 
       {/* Section pour les demandes reçues */}
-      <h2 className="text-2xl font-semibold text-gray-700 mt-8 mb-4">Demandes reçues</h2>
+      <h2 className="text-2xl font-semibold text-orange-700 mt-8 mb-4">Demandes reçues</h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {receivedRequests.length > 0 ? (
           receivedRequests.map((request) => (
@@ -210,10 +210,10 @@ const LoanRequestsPage = () => {
                 <span
                   className={`font-bold ${
                     request.status === "accepted"
-                      ? "text-green-600"
+                      ? "text-orange-600"
                       : request.status === "pending"
                       ? "text-orange-600"
-                      : "text-red-600"
+                      : "text-indigo-700"
                   }`}
                 >
                   {request.status}
@@ -225,14 +225,14 @@ const LoanRequestsPage = () => {
               <button
                 type="button"
                 onClick={() => handleRequestStatusChange(request.request_id, "accepted")}
-                className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow hover:bg-green-600 transition"
+                className="mt-4 bg-orange-800 text-white py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
               >
                 Accepter
               </button>
               <button
                 type="button"
                 onClick={() => handleRequestStatusChange(request.request_id, "declined")}
-                className="mt-2 bg-red-500 text-white py-2 px-4 rounded-lg shadow hover:bg-red-600 transition"
+                className="mt-2 bg-indigo-950 text-white py-2 px-4 rounded-lg shadow hover:bg-indigo-800 transition"
               >
                 Refuser
               </button>

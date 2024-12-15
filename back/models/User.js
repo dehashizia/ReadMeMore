@@ -16,8 +16,8 @@ const User = sequelize.define(
     emailConfirmed: { type: DataTypes.BOOLEAN, defaultValue: false },
     profile_photo: {
       type: DataTypes.STRING,
-      allowNull: true, // Cette colonne peut être nulle si l'utilisateur n'a pas de photo
-      defaultValue: null, // Optionnel : tu peux définir une valeur par défaut si besoin
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {

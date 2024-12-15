@@ -14,7 +14,8 @@ import {
   TrashIcon,
   ArrowPathIcon, 
 } from "@heroicons/react/24/solid";
-import { FaGithub, FaTwitter, FaLinkedin,FaQrcode, FaArrowAltCircleRight  } from 'react-icons/fa';
+import { FaGithub, FaTwitter, FaLinkedin,FaQrcode, FaArrowAltCircleRight, FaBars,
+  FaTimes, } from 'react-icons/fa';
 import axios from "axios";
 
 interface Book {
@@ -33,13 +34,14 @@ export default function MyLibrary() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const { book_id } = useParams();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
   const statuses = [
     { key: "wishlist", label: "Wishlist", icon: StarIcon, color: "text-yellow-500" },
-    { key: "lu", label: "Lu", icon: CheckCircleIcon, color: "text-green-500" },
-    { key: "à lire", label: "À lire", icon: BookOpenIcon, color: "text-blue-500" },
-    { key: "liked", label: "Favoris", icon: HeartIcon, color: "text-red-500" },
+    { key: "read", label: "Read", icon: CheckCircleIcon, color: "text-green-500" },
+    { key: "to read", label: "To read", icon: BookOpenIcon, color: "text-blue-500" },
+    { key: "liked", label: "Favorite", icon: HeartIcon, color: "text-red-500" },
   ];
 
   useEffect(() => {
@@ -169,10 +171,51 @@ export default function MyLibrary() {
   };
 
   return (
-    <main  className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
+    <main  className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16  pb-16"
     style={{ backgroundImage: "url('/b.webp')" }}   >
+        {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/search" onClick={() => setIsMenuOpen(false)}>
+                Search
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
       {/* Header */}
-      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
@@ -255,19 +298,25 @@ export default function MyLibrary() {
                             onClick={() => handleUpdateStatus(book.book_id, "wishlist")}
                             className="text-yellow-500 hover:text-yellow-700"
                           >
-                            Ajouter à la wishlist
+                            Add to wishlist
                           </button>
                           <button type="button"
-                            onClick={() => handleUpdateStatus(book.book_id, "lu")}
+                            onClick={() => handleUpdateStatus(book.book_id, "read")}
                             className="text-green-500 hover:text-green-700"
                           >
-                            Marquer comme lu
+                            Mark as read
+                          </button>
+                          <button type="button"
+                            onClick={() => handleUpdateStatus(book.book_id, "to read")}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            Add to read list
                           </button>
                           <button type="button"
                             onClick={() => handleUpdateStatus(book.book_id, "liked")}
                             className="text-red-500 hover:text-red-700"
                           >
-                            Ajouter aux favoris
+                           Add to favorites
                           </button>
                         </div>
                       </div>
@@ -275,7 +324,7 @@ export default function MyLibrary() {
                   })}
                 </div>
               ) : (
-                <p className="text-center text-gray-500">Aucun livre à afficher</p>
+                <p className="text-center text-gray-500">No books to display</p>
               )}
             </div>
           );

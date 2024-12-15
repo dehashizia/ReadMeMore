@@ -60,12 +60,14 @@ skinparam defaultFontName Monospaced
 skinparam linetype ortho
 
 entity User {
-  user_id   : INTEGER      <<PK, NOT NULL>>
+  user_id         : INTEGER      <<PK, NOT NULL>>
   --
-  username  : VARCHAR(50)  <<NOT NULL>>
-  email     : VARCHAR(100) <<NOT NULL, UNIQUE>>
-  password  : VARCHAR(100) <<NOT NULL>>
-  role_id   : INTEGER      <<FK, NOT NULL>>
+  username        : VARCHAR(50)  <<NOT NULL>>
+  email           : VARCHAR(100) <<NOT NULL, UNIQUE>>
+  password        : VARCHAR(100) <<NOT NULL>>
+  emailConfirmed  : BOOLEAN      <<DEFAULT FALSE>>
+  profile_photo   : VARCHAR(255)
+  role_id         : INTEGER      <<FK, NOT NULL>>
 }
 
 entity Role {
@@ -74,19 +76,26 @@ entity Role {
   role_name : VARCHAR(20)  <<NOT NULL>>
 }
 
+entity Category {
+  category_id   : INTEGER      <<PK, NOT NULL>>
+  --
+  category_name : VARCHAR(50)  <<NOT NULL>>
+}
+
 entity Book {
   book_id          : INTEGER      <<PK, NOT NULL>>
   --
-  title            : VARCHAR(100) <<NOT NULL>>
-  authors          : VARCHAR(255) <<NOT NULL>> -- JSON or comma-separated list
+  title            : TEXT         <<NOT NULL>>
+  authors          : TEXT[]       <<NOT NULL>> -- Array of authors
   category_id      : INTEGER      <<FK, NOT NULL>>
   published_date   : DATE
   description      : TEXT
-  isbn             : VARCHAR(20)  <<UNIQUE>>
+  isbn             : VARCHAR(30)  <<UNIQUE>>
   page_count       : INTEGER
   thumbnail        : VARCHAR(255)
   language         : VARCHAR(10)
-  barcode          : VARCHAR(50)  <<UNIQUE>>
+  barcode          : VARCHAR(100) <<UNIQUE>>
+  is_available_for_loan : BOOLEAN  <<DEFAULT FALSE>>
 }
 
 entity Library {
@@ -97,12 +106,6 @@ entity Library {
   status     : VARCHAR(10)  <<NOT NULL>> -- Possible values: 'to read', 'reading', 'read'
 }
 
-entity Category {
-  category_id   : INTEGER      <<PK, NOT NULL>>
-  --
-  category_name : VARCHAR(50)  <<NOT NULL>>
-}
-
 entity Comment {
   comment_id : INTEGER      <<PK, NOT NULL>>
   --
@@ -110,6 +113,16 @@ entity Comment {
   book_id    : INTEGER      <<FK, NOT NULL>>
   text       : TEXT         <<NOT NULL>>
   date       : DATE
+  rating     : INTEGER      <<CHECK (rating >= 1 AND rating <= 5)>>
+}
+
+entity LoanRequest {
+  request_id   : INTEGER     <<PK, NOT NULL>>
+  --
+  user_id      : INTEGER     <<FK, NULL>>
+  book_id      : INTEGER     <<FK, NOT NULL>>
+  status       : VARCHAR(255) <<DEFAULT 'En attente'>>
+  request_date : TIMESTAMP   <<DEFAULT CURRENT_TIMESTAMP>>
 }
 
 User ||--o{ Library : "owns books in"
@@ -118,9 +131,10 @@ User ||--o{ Comment : "writes"
 Book ||--o{ Comment : "receives"
 Role ||--o{ User : "assigns role"
 Category ||--o{ Book : "categorizes"
+User ||--o{ LoanRequest : "requests"
+Book ||--o{ LoanRequest : "is requested in"
 
 @enduml
-
 ## **Explication du code :**
 
 - Chaque **entité** est représentée par un bloc `entity` avec ses attributs.

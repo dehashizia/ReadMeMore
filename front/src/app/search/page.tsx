@@ -9,9 +9,10 @@ import {
   UserIcon,
   BookOpenIcon,
   InformationCircleIcon,
-  HeartIcon,
+ 
 } from "@heroicons/react/24/solid";
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaBars, FaTimes } from "react-icons/fa";
 
 interface Book {
   book_id: string;
@@ -25,6 +26,7 @@ interface Book {
   source?: string;
 }
 
+
 export default function Search() {
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -33,8 +35,10 @@ export default function Search() {
   const [filteredResults, setFilteredResults] = useState<Book[]>([]);
   const [myLibrary, setMyLibrary] = useState<Book[]>([]);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -124,12 +128,54 @@ export default function Search() {
 
   return (
     <main
-      className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
+    className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16 pb-16"
       style={{ backgroundImage: "url('/LL.webp')" }}
     >
+      {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
+                My Library
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
       
       {/* Header Icons */}
-      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+     
+  <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
@@ -150,6 +196,7 @@ export default function Search() {
         <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
       </div>
+      
 
       {/* Logo and title */}
 <div className="flex items-center mt-4 mb-8">
@@ -170,7 +217,7 @@ export default function Search() {
       <form onSubmit={handleSearch} className="flex w-full max-w-md mb-6">
         <input
           type="text"
-          placeholder="Rechercher un livre"
+          placeholder="Search for a book"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="border rounded p-3 w-full mr-2 text-black"
@@ -187,7 +234,7 @@ export default function Search() {
       <form className="flex items-center w-full max-w-md mb-6">
         <input
           type="text"
-          placeholder="Filtrer les catégories"
+          placeholder="Filter categories"
           value={categoryFilter}
           onChange={handleCategoryFilter}
           className="border rounded p-3 w-full mr-2 text-black"
@@ -228,7 +275,7 @@ export default function Search() {
                 </p>
             <Link href={`/details/${book.book_id}`}>
               <button type="button" className="bg-blue-800 text-white px-4 py-2 rounded mt-4">
-                Voir les détails
+              View details
               </button>
             </Link>
           </div>

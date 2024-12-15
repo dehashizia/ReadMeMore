@@ -5,6 +5,14 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
+import {
+
+  InformationCircleIcon,
+ 
+} from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaBars, FaTimes } from "react-icons/fa";
 
 interface Book {
   book_id: string;
@@ -37,6 +45,7 @@ export default function Details() {
   const [rating, setRating] = useState<number>(0);
   const [comments, setComments] = useState<Comment[]>([]);
   const { book_id } = useParams();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
@@ -168,15 +177,73 @@ export default function Details() {
   }
 
   return (
-    <main className="relative min-h-screen p-6 flex flex-col items-center justify-between">
-      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+    <main className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16 pb-16">
+     {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
+                My Library
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
+      
+      {/* Header Icons */}
+     
+  <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
         <Link href="/profile">
-          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         <Link href="/my-library">
-          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer" />
+          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
+        <Link href="/about">
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        {/* Icône de prêt */}
+      
+
+        <Link href="/available-books">
+          <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        {/* Icône de scan */}
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       </div>
+      
 
       <div className="flex flex-col items-center justify-start text-center w-full max-w-4xl bg-white shadow-xl p-8 rounded-lg mt-10">
         <h1 className="text-3xl font-semibold mb-4">{book.title}</h1>
@@ -207,7 +274,7 @@ export default function Details() {
           <button
             type="button"
             className="flex items-center space-x-2 text-green-500"
-            onClick={() => handleAddToLibrary(book, "lu")}
+            onClick={() => handleAddToLibrary(book, "read")}
           >
             <CheckCircleIcon className="w-6 h-6" />
             <span>Lu</span>
@@ -215,7 +282,7 @@ export default function Details() {
           <button
             type="button"
             className="flex items-center space-x-2 text-blue-500"
-            onClick={() => handleAddToLibrary(book, "à lire")}
+            onClick={() => handleAddToLibrary(book, "to read")}
           >
             <BookOpenIcon className="w-6 h-6" />
             <span>À lire</span>
@@ -228,15 +295,15 @@ export default function Details() {
 
         {/* Formulaire d'ajout de commentaire */}
         <div className="w-full max-w-xl bg-gray-100 p-6 rounded-lg shadow-md text-black">
-          <h2 className="text-xl font-medium mb-4">Ajouter un commentaire</h2>
+          <h2 className="text-xl font-medium mb-4">Add comment</h2>
           <textarea
             className="w-full h-32 p-4 mb-4 border border-gray-300 rounded-md text-black"
-            placeholder="Écrivez un commentaire..."
+            placeholder="write a comment..."
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
           <div className="flex space-x-4 mb-4">
-            <span>Note: </span>
+            <span>Rating: </span>
             {[1, 2, 3, 4, 5].map((star) => (
               <StarIcon
                 key={star}
@@ -246,13 +313,13 @@ export default function Details() {
             ))}
           </div>
           <button type="button" onClick={handleSubmitComment} className="bg-blue-800 text-black px-6 py-2 rounded-lg">
-            Ajouter le commentaire
+          Add the comment
           </button>
         </div>
 
         {/* Affichage des commentaires */}
         <div className="mt-10 w-full max-w-xl bg-gray-100 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-medium mb-4 text-black">Commentaires</h2>
+          <h2 className="text-xl font-medium mb-4 text-black">Comment</h2>
           {comments.length > 0 ? (
             comments.map((comment) => (
               <div key={comment.comment_id} className="mb-6">
@@ -276,10 +343,39 @@ export default function Details() {
               </div>
             ))
           ) : (
-            <p className="text-gray-400">Aucun commentaire pour ce livre.</p>
+            <p className="text-gray-400">No comments for this book.</p>
           )}
         </div>
       </div>
+      {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+  <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <ul className="flex space-x-6">
+      <li>
+        <a href="/legal" className="hover:underline">
+          Mentions légales
+        </a>
+      </li>
+      <li>
+        <a href="/privacy" className="hover:underline">
+          Politique de confidentialité
+        </a>
+      </li>
+    </ul>
+    <div className="flex space-x-6">
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <FaTwitter className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin className="w-6 h-6 text-white" />
+      </a>
+    </div>
+  </div>
+</footer>
     </main>
   );
 }

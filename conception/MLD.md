@@ -8,6 +8,8 @@
 - **username**: Nom d’utilisateur unique et obligatoire.
 - **email**: Adresse e-mail unique et obligatoire de l’utilisateur.
 - **password**: Mot de passe crypté pour l’authentification.
+- **emailConfirmed**: Indique si l’adresse e-mail de l’utilisateur a été confirmée (boolean, défaut: false).
+- **profile_photo**: URL ou chemin vers la photo de profil de l’utilisateur (nullable).
 - **role_id**: Fait référence à l’identifiant de la table `Role` pour définir le rôle de l’utilisateur. (Clé étrangère)
 
 ### 2. Table **Role**
@@ -28,6 +30,7 @@
 - **thumbnail**: URL de la couverture du livre.
 - **language**: Langue du livre.
 - **barcode**: Code-barre unique pour chaque livre.
+- **is_available_for_loan**: Indique si le livre est disponible pour emprunt (boolean, défaut: false).
 
 ### 4. Table **Library**
 
@@ -48,14 +51,27 @@
 - **book_id**: Fait référence au livre auquel le commentaire est lié. (Clé étrangère)
 - **text**: Texte du commentaire.
 - **date**: Date à laquelle le commentaire a été posté.
+- **rating**: Note attribuée au livre par l’utilisateur (nullable).
 
-### Relations
+### 7. Table **Loan Request**
 
-| Table     | Relation                    | Table Référencée | Cardinalité |
-|-----------|-----------------------------|-------------------|-------------|
-| User      | `role_id` -> `Role.role_id` | Role             | N-1         |
-| Library   | `user_id` -> `User.user_id` | User             | N-1         |
-| Library   | `book_id` -> `Book.book_id` | Book             | N-1         |
-| Book      | `category_id` -> `Category.category_id` | Category  | N-1         |
-| Comment   | `user_id` -> `User.user_id` | User             | N-1         |
-| Comment   | `book_id` -> `Book.book_id` | Book             | N-1         |
+- **request_id**: Identifiant unique pour chaque demande d’emprunt. (Clé primaire)
+- **user_id**: Fait référence à l’utilisateur ayant fait la demande. (Clé étrangère)
+- **book_id**: Fait référence au livre concerné par la demande. (Clé étrangère)
+- **status**: Statut de la demande (ex. : En attente, Acceptée, Refusée).
+- **request_date**: Date et heure de la demande d’emprunt (défaut: CURRENT_TIMESTAMP).
+
+---
+
+## Relations
+
+| Table         | Relation                     | Table Référencée | Cardinalité |
+|---------------|------------------------------|-------------------|-------------|
+| User          | `role_id` -> `Role.role_id` | Role              | N-1         |
+| Library       | `user_id` -> `User.user_id` | User              | N-1         |
+| Library       | `book_id` -> `Book.book_id` | Book              | N-1         |
+| Book          | `category_id` -> `Category.category_id` | Category | N-1         |
+| Comment       | `user_id` -> `User.user_id` | User              | N-1         |
+| Comment       | `book_id` -> `Book.book_id` | Book              | N-1         |
+| Loan Request  | `user_id` -> `User.user_id` | User              | N-1         |
+| Loan Request  | `book_id` -> `Book.book_id` | Book              | N-1         |

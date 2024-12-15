@@ -114,7 +114,22 @@ export default function ScanPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+   
+      <div className="items-center justify-center min-h-screen relative p-4 flex flex-col bg-gray-100">
+    {/* Vecteurs couvrant toute la hauteur à droite */}
+    <div className="fixed top-0 right-0 w-1/3 h-full pointer-events-none">
+      <img
+        src="v.png"
+        alt="Vector 1"
+        className="absolute top-0 right-0 w-74 opacity-100 "
+      />
+      <img
+        src="v.png"
+        alt="Vector 2"
+        className="absolute bottom-0 top-0 right-0 w-72 opacity-90 "
+      />
+    </div>
+
       
       {/* Header Icons */}
       <div className="absolute top-0 right-0 p-4 flex space-x-4">

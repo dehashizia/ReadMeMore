@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { CogIcon } from "@heroicons/react/24/outline";
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
+import { UserIcon, BookOpenIcon, MagnifyingGlassIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
+
+
 import Link from "next/link";
 
 export default function Profile() {
@@ -117,10 +122,32 @@ export default function Profile() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4 relative"
-      style={{ backgroundImage: `url("/book.webp")` }}
+    <main
+      className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16"
+      style={{ backgroundImage: "url('/book.webp')" }}
     >
+   
+      {/* Header Icons */}
+      <div className="absolute top-0 right-0 p-4 flex space-x-4 z-20">
+        <Link href="/profile">
+          <UserIcon className="w-8 h-8 text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8  text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/my-library">
+          <BookOpenIcon className="w-8 h-8  text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/about">
+          <InformationCircleIcon className="w-8 h-8  text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/available-books">
+          <FaArrowAltCircleRight className="w-8 h-8  text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/scan">
+          <FaQrcode className="w-8 h-8  text-indigo-900 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+      </div>
       <div className="absolute inset-0 bg-black opacity-50" />
       <div className="relative z-10 bg-white p-8 rounded-lg shadow-lg max-w-lg w-full text-center">
         <h1 className="text-3xl font-bold mb-4 text-gray-900">My Profile</h1>
@@ -184,6 +211,36 @@ export default function Profile() {
           <p className="text-gray-600">Chargement des données...</p>
         )}
       </div>
-    </div>
+      {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+          <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+          <ul className="flex space-x-6">
+            <li>
+              <a href="/legal" className="hover:underline">
+                Mentions légales
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" className="hover:underline">
+                Politique de confidentialité
+              </a>
+            </li>
+          </ul>
+          <div className="flex space-x-6">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <FaGithub className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+              <FaTwitter className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin className="w-6 h-6 text-white" />
+            </a>
+          </div>
+        </div>
+      </footer>
+    
+    </main>
   );
 }
