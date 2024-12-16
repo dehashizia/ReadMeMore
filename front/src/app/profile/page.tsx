@@ -20,7 +20,7 @@ export default function Profile() {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [imageLoading, setImageLoading] = useState<boolean>(true); // état pour charger l'image
+  const [imageLoading, setImageLoading] = useState<boolean>(true); 
   const router = useRouter();
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -68,15 +68,15 @@ export default function Profile() {
       }
   
       try {
-        // Récupérer le token CSRF
+       
         const csrfResponse = await axios.get(`${API_BASE_URL}/api/csrf-token`);
         const csrfToken = csrfResponse.data.csrfToken;
   
-        // Créer le FormData
+      
         const formData = new FormData();
         formData.append("profilePhoto", file);
   
-        // Envoi du fichier avec le token CSRF
+       
         const response = await axios.post(
           `${API_BASE_URL}/api/upload-profile-photo`,
           formData,
@@ -84,23 +84,22 @@ export default function Profile() {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
-              "X-CSRF-Token": csrfToken, // Ajoutez ici le token CSRF
+              "X-CSRF-Token": csrfToken, 
             },
           }
         );
   
-        // Mise à jour de l'interface utilisateur si la photo est mise à jour
         if (response.data.profile_photo) {
           alert("Photo de profil mise à jour avec succès !");
           setUserData((prevData) => {
-            // Si prevData est non null, on met à jour la photo de profil.
+         
             if (prevData) {
               return {
                 ...prevData,
-                profile_photo: response.data.profile_photo, // Mettre à jour la photo de profil
+                profile_photo: response.data.profile_photo, 
               };
             }
-            // Si prevData est null, on renvoie null.
+         
             return prevData;
           });
         }
@@ -111,7 +110,7 @@ export default function Profile() {
     }
   };
 
-  const handleImageLoad = () => setImageLoading(false); // Mettre à jour l'état une fois l'image chargée
+  const handleImageLoad = () => setImageLoading(false); 
 
   if (loading) {
     return <div>Chargement...</div>;
@@ -160,13 +159,13 @@ export default function Profile() {
                 src={
                   userData.profile_photo
                     ? `${API_BASE_URL}/uploads/profiles/${userData.profile_photo}`
-                    : "/default-profile.jpg" // Image par défaut si aucune photo n'est présente
+                    : "/default-profile.jpg" 
                 }
                 alt="User Profile"
-                onLoad={handleImageLoad} // Appel de la fonction une fois l'image chargée
+                onLoad={handleImageLoad} 
                 className={`w-24 h-24 mx-auto rounded-full object-cover border-4 border-indigo-500 ${
                   imageLoading ? "opacity-0" : "opacity-100"
-                }`} // Appliquer une opacité quand l'image est en cours de chargement
+                }`} 
               />
               <label
                 htmlFor="profile-photo"
@@ -195,7 +194,7 @@ export default function Profile() {
             <Link href="/settings">
               <div className="flex items-center justify-center space-x-2 mt-4 text-indigo-700 hover:text-indigo-900 cursor-pointer">
                 <CogIcon className="w-6 h-6" />
-                <span className="text-lg">Modifier mon profil</span>
+                <span className="text-lg">Edit my profile</span>
               </div>
             </Link>
 
@@ -204,7 +203,7 @@ export default function Profile() {
               onClick={handleLogout}
               className="mt-6 w-full py-3 bg-indigo-900 text-white text-lg font-bold rounded-lg hover:bg-indigo-800"
             >
-              Déconnexion
+              sign out
             </button>
           </div>
         ) : (

@@ -1,9 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { TrashIcon, LockClosedIcon } from "@heroicons/react/24/solid";
+
+import {
+  UserIcon,
+  MagnifyingGlassIcon,
+  InformationCircleIcon,
+  StarIcon,
+  BookOpenIcon,
+  CheckCircleIcon,
+  HeartIcon,
+  ArrowPathIcon, 
+} from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin,FaQrcode, FaArrowAltCircleRight, FaBars,
+  FaTimes, } from 'react-icons/fa';
 
 export default function Settings() {
   const [userData, setUserData] = useState({
@@ -14,6 +28,7 @@ export default function Settings() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const [randomPosition, setRandomPosition] = useState<string>("left");
 
@@ -131,14 +146,76 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-cover bg-center p-4 relative"
+    <div className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16  pb-16"
     style={{ backgroundImage: `url("/book.webp")` }}>
+       {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/search" onClick={() => setIsMenuOpen(false)}>
+                Search
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
+      {/* Header */}
+      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
+        <Link href="/profile">
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/about">
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
+        {/* Icône de prêt */}
+      <Link href="/available-books">
+        <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       
-      <h1 className="text-2xl font-bold mb-6 text-black">Paramètres du profil</h1>
+      {/* Icône de scan */}
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
+      </div>
+      
+      <h1 className="text-2xl font-bold mb-6 text-black">Profile settings</h1>
       {error && <p className="text-red-500">{error}</p>}
 
       <form onSubmit={handleUpdateProfile} className="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
-        <label htmlFor="username" className="block text-xl mb-2 text-amber-800">Nom d'utilisateur</label>
+        <label htmlFor="username" className="block text-xl mb-2 text-amber-800">Username</label>
         <input
           id="username"
           type="text"
@@ -157,7 +234,7 @@ export default function Settings() {
         />
 
         <div className="flex items-center space-x-2">
-          <label htmlFor="newPassword" className="block text-xl mb-2 text-amber-800">Nouveau mot de passe</label>
+          <label htmlFor="newPassword" className="block text-xl mb-2 text-amber-800">New password</label>
           <button 
             type="button"
             onClick={handlePasswordChangeClick}
@@ -178,19 +255,50 @@ export default function Settings() {
           type="submit"
           className="mb-4 px-8 py-3 bg-[#1e1e49] text-white font-bold rounded-full"
         >
-          Appliquer
+         Apply
         </button>
       </form>
 
       <div className="flex space-x-4 mt-4">
         <button type="button"
           onClick={handleDeleteAccount}
-          className="text-[#793f18] flex items-center space-x-2"
+          className="text-[#1e1e49] font-bold flex items-center space-x-2"
         >
           <TrashIcon className="w-6 h-6" />
-          <span>Supprimer mon compte</span>
+          <span>Delete my account</span>
         </button>
       </div>
+       {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+        <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+          <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+          <ul className="flex space-x-6">
+            <li>
+              <a href="/legal" className="hover:underline">
+                Mentions légales
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" className="hover:underline">
+                Politique de confidentialité
+              </a>
+            </li>
+          </ul>
+          <div className="flex space-x-6">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <FaGithub className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+              <FaTwitter className="w-6 h-6 text-white" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+              <FaLinkedin className="w-6 h-6 text-white" />
+            </a>
+          </div>
+        </div>
+      </footer>
+    
     </div>
+    
   );
 }

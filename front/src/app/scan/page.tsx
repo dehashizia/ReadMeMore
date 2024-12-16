@@ -3,12 +3,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
-import { UserIcon, BookOpenIcon, MagnifyingGlassIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
-import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
+import {
+  UserIcon,
+  BookOpenIcon,
+  InformationCircleIcon,
+ 
+} from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaBars, FaTimes } from "react-icons/fa";
 import Link from "next/link";
 
 export default function ScanPage() {
   const [token, setToken] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isbn, setIsbn] = useState<string>("");
   const [book, setBook] = useState<{
     book_id: number;
@@ -115,29 +122,56 @@ export default function ScanPage() {
 
   return (
    
-      <div className="items-center justify-center min-h-screen relative p-4 flex flex-col bg-gray-100">
-    {/* Vecteurs couvrant toute la hauteur à droite */}
-    <div className="fixed top-0 right-0 w-1/3 h-full pointer-events-none">
-      <img
-        src="v.png"
-        alt="Vector 1"
-        className="absolute top-0 right-0 w-74 opacity-100 "
-      />
-      <img
-        src="v.png"
-        alt="Vector 2"
-        className="absolute bottom-0 top-0 right-0 w-72 opacity-90 "
-      />
+      <div className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16 pb-16">
+    
+      
+       {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
+                My Library
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
 
       
       {/* Header Icons */}
-      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+     
+  <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
-        </Link>
-        <Link href="/search">
-          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         <Link href="/my-library">
           <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
@@ -145,20 +179,25 @@ export default function ScanPage() {
         <Link href="/about">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
+        {/* Icône de prêt */}
+      
+
         <Link href="/available-books">
           <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        <Link href="/scan">
-          <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
-        </Link>
+        {/* Icône de scan */}
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       </div>
+      
 
-      <h1 className="text-2xl text-black font-bold mb-4">Rechercher un livre par ISBN</h1>
+      <h1 className="text-2xl text-black font-bold mb-4">Search for a book by ISBN</h1>
       <input
         type="text"
         value={isbn}
         onChange={(e) => setIsbn(e.target.value)}
-        placeholder="Saisir un ISBN"
+        placeholder="Enter an ISBN"
         className="w-full max-w-md px-4 py-2 border text-black border-gray-300 rounded shadow-sm focus:ring focus:ring-blue-300"
       />
       <button
@@ -166,26 +205,26 @@ export default function ScanPage() {
         onClick={fetchBook}
         className="mt-4 px-6 py-2 bg-indigo-950 text-white font-bold rounded-xl hover:bg-indigo-900"
       >
-        Rechercher
+        Search
       </button>
       {book ? (
         <div className="mt-8 text-center">
           <h2 className="text-xl text-black font-bold">{book.title}</h2>
           <img src={book.thumbnail} alt={book.title} className="w-32 h-48 mx-auto text-black" />
-          <p className="text-xl text-black font-bold">Auteurs : {book.authors.join(", ")}</p>
-          <p className="text-xl text-black font-bold">Catégorie : {book.category_name}</p>
-          <p className="text-xl text-black font-bold">Date de publication : {book.published_date}</p>
+          <p className="text-xl text-black font-bold">Author(s): {book.authors.join(", ")}</p>
+          <p className="text-xl text-black font-bold">Category  : {book.category_name}</p>
+          <p className="text-xl text-black font-bold">Published : {book.published_date}</p>
           <p className="text-sm text-gray-500">Source : {book.source === "database" ? "Base de données" : "API Google Books"}</p>
           <button
             type="button"
             onClick={() => makeBookAvailable(book.book_id)}
-            className="mt-4 px-6 py-2 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700"
+            className="mt-4 px-6 py-2 bg-blue-700 text-white font-bold rounded-xl hover:bg-blue-500"
           >
-            Rendre disponible pour prêt
+            Available for loan
           </button>
         </div>
       ) : (
-        <p className="mt-8 text-red-500">Aucun livre trouvé pour cet ISBN.</p>
+        <p className="mt-8 text-indigo-950">No books found for this ISBN</p>
       )}
 {/* Footer */}
 <footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">

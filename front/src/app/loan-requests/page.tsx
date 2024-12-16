@@ -115,14 +115,14 @@ const LoanRequestsPage = () => {
   return (
     <div className="min-h-screen p-4 flex flex-col">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-        Mes Demandes de Prêt
+      My Loan Requests
       </h1>
 
       {isLoading && <p className="text-center text-blue-500">Chargement des données...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Section pour les demandes envoyées */}
-      <h2 className="text-2xl font-semibold text-blue-800 mb-4">Demandes envoyées</h2>
+      <h2 className="text-2xl font-semibold text-blue-800 mb-4">Requests sent</h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {sentRequests.length > 0 ? (
           sentRequests.map((request) => (
@@ -139,16 +139,16 @@ const LoanRequestsPage = () => {
                 {request.Book?.title || "Titre inconnu"}
               </h3>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Auteur(s) : {request.Book?.authors?.join(", ") || "Non renseigné"}
+              Author(s) : {request.Book?.authors?.join(", ") || "Non renseigné"}
               </p>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Propriétaire :{" "}
+              Owner:{" "}
                 <span className="font-bold text-blue-600">
                   {request.Book?.user?.username || "Inconnu"}
                 </span>
               </p>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Statut :{" "}
+                Status :{" "}
                 <span
                   className={`font-bold ${
                     request.status === "accepted"
@@ -162,19 +162,19 @@ const LoanRequestsPage = () => {
                 </span>
               </p>
               <p className="text-sm text-gray-600 text-center">
-                Date de demande : {new Date(request.request_date).toLocaleDateString()}
+              Request date : {new Date(request.request_date).toLocaleDateString()}
               </p>
             </div>
           ))
         ) : (
           <p className="col-span-full text-center text-gray-500">
-            Aucune demande envoyée pour le moment.
+            No requests sent at the moment
           </p>
         )}
       </div>
 
       {/* Section pour les demandes reçues */}
-      <h2 className="text-2xl font-semibold text-orange-700 mt-8 mb-4">Demandes reçues</h2>
+      <h2 className="text-2xl font-semibold text-orange-700 mt-8 mb-4">Requests received</h2>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {receivedRequests.length > 0 ? (
           receivedRequests.map((request) => (
@@ -191,22 +191,22 @@ const LoanRequestsPage = () => {
                 {request.Book?.title || "Titre inconnu"}
               </h3>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Auteur(s) : {request.Book?.authors?.join(", ") || "Non renseigné"}
+              Author(s) : {request.Book?.authors?.join(", ") || "Non renseigné"}
               </p>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Propriétaire :{" "}
+              Owner :{" "}
                 <span className="font-bold text-blue-600">
                   {request.Book?.user?.username || "Inconnu"}
                 </span>
               </p>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Demandeur :{" "}
+              Requester :{" "}
                 <span className="font-bold text-blue-600">
                   {request.RequestingUser?.username || "Inconnu"}
                 </span>
               </p>
               <p className="text-sm text-gray-600 text-center">
-                Statut :{" "}
+                Status :{" "}
                 <span
                   className={`font-bold ${
                     request.status === "accepted"
@@ -220,27 +220,27 @@ const LoanRequestsPage = () => {
                 </span>
               </p>
               <p className="text-sm text-gray-600 text-center">
-                Date de demande : {new Date(request.request_date).toLocaleDateString()}
+              Request date : {new Date(request.request_date).toLocaleDateString()}
               </p>
               <button
                 type="button"
                 onClick={() => handleRequestStatusChange(request.request_id, "accepted")}
                 className="mt-4 bg-orange-800 text-white py-2 px-4 rounded-lg shadow hover:bg-orange-600 transition"
               >
-                Accepter
+                Accept
               </button>
               <button
                 type="button"
                 onClick={() => handleRequestStatusChange(request.request_id, "declined")}
                 className="mt-2 bg-indigo-950 text-white py-2 px-4 rounded-lg shadow hover:bg-indigo-800 transition"
               >
-                Refuser
+                Reject
               </button>
             </div>
           ))
         ) : (
           <p className="col-span-full text-center text-gray-500">
-            Aucune demande reçue pour le moment.
+           No requests received at the moment
           </p>
         )}
       </div>

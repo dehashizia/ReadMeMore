@@ -2,10 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
-import { UserIcon, BookOpenIcon, MagnifyingGlassIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+
+
 import Link from "next/link";
-import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa"; // Assurez-vous d'importer les icônes
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
+import {
+  UserIcon,
+  BookOpenIcon,
+  InformationCircleIcon,
+ 
+} from "@heroicons/react/24/solid";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { FaBars, FaTimes } from "react-icons/fa";
+
 
 interface User {
   username: string;
@@ -25,6 +34,7 @@ const AvailableBooksPage = () => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
@@ -105,15 +115,55 @@ const AvailableBooksPage = () => {
   };
 
   return (
-    <div className="min-h-screen  p-4 flex flex-col">
+    <div className="min-h-screen  p-4 flex flex-col pb-16">
      
+      {/* Hamburger Menu */}
+    <div className="absolute top-4 left-4 md:hidden z-50">
+      <button type="button"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+      >
+        {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </button>
+      {isMenuOpen && (
+        <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+          <ul className="space-y-4 text-gray-700">
+            <li>
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                Profile
+              </Link>
+            </li>
+            <li>
+              <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
+                My Library
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                Available Books
+              </Link>
+            </li>
+            <li>
+              <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
+
+      
       {/* Header Icons */}
-      <div className="absolute top-0 right-0 p-4 flex space-x-4">
+     
+  <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
-        </Link>
-        <Link href="/search">
-          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
         <Link href="/my-library">
           <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
@@ -121,19 +171,20 @@ const AvailableBooksPage = () => {
         <Link href="/about">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-
         {/* Icône de prêt */}
+      
+
         <Link href="/available-books">
           <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         {/* Icône de scan */}
-        <Link href="/scan">
-          <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
-        </Link>
+      <Link href="/scan">
+        <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+      </Link>
       </div>
 
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
-        Livres disponibles pour prêt
+      Books available for loan
       </h1>
 
       {/* Affichage de l'état de chargement ou d'erreur */}
@@ -156,10 +207,10 @@ const AvailableBooksPage = () => {
                 {book.title}
               </h2>
               <p className="text-sm text-gray-600 text-center mb-2">
-                Auteur(s): {book.authors.join(", ")}
+              Author(s): {book.authors.join(", ")}
               </p>
               <p className="text-sm text-gray-600 text-center">
-                Mis à disposition par:{" "}
+              Provided by:{" "}
                 <span className="font-bold text-blue-600">{book.user?.username || "Utilisateur inconnu"}</span>
               </p>
               <button
@@ -167,46 +218,47 @@ const AvailableBooksPage = () => {
                 onClick={() => requestLoan(book.book_id, book.user?.username || "Inconnu")}
                 className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-600 transition"
               >
-                Faire une demande de prêt
+                Make a loan request
               </button>
             </div>
           ))
         ) : (
           <p className="col-span-full text-center text-gray-500">
-            Aucun livre disponible pour le moment.
+            
+No books available at the moment
           </p>
         )}
       </div>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-8 mt-auto">
-        <div className="max-w-screen-xl mx-auto flex justify-between items-center">
-          <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
-          <ul className="flex space-x-6">
-            <li>
-              <a href="/legal" className="hover:underline">
-                Mentions légales
-              </a>
-            </li>
-            <li>
-              <a href="/privacy" className="hover:underline">
-                Politique de confidentialité
-              </a>
-            </li>
-          </ul>
-          <div className="flex space-x-6">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-              <FaGithub className="w-6 h-6 text-white" />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <FaTwitter className="w-6 h-6 text-white" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <FaLinkedin className="w-6 h-6 text-white" />
-            </a>
-          </div>
-        </div>
-      </footer>
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+  <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <ul className="flex space-x-6">
+      <li>
+        <a href="/legal" className="hover:underline">
+          Mentions légales
+        </a>
+      </li>
+      <li>
+        <a href="/privacy" className="hover:underline">
+          Politique de confidentialité
+        </a>
+      </li>
+    </ul>
+    <div className="flex space-x-6">
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <FaTwitter className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin className="w-6 h-6 text-white" />
+      </a>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };
