@@ -8,8 +8,10 @@ import { useRouter } from "next/navigation";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // Nouveau champ pour confirmation
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
@@ -31,6 +33,13 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
+
+    // Vérification si les mots de passe correspondent
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -50,8 +59,10 @@ export default function Login() {
       const token = response.data.token;
       localStorage.setItem("token", token);
 
-      alert("Login successful!");
-      router.push("/search");
+      setSuccessMessage("Login successful! Redirecting to search page...");
+      setTimeout(() => {
+        router.push("/search");
+      }, 2000);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.error || "Failed to login");
@@ -75,6 +86,7 @@ export default function Login() {
           Login to Your Account
         </h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {successMessage && <p className="text-green-500 text-center mb-4">{successMessage}</p>}
         <div className="mb-4">
           <label className="block text-lg mb-2" htmlFor="email">
             Email
@@ -89,7 +101,7 @@ export default function Login() {
             placeholder="Enter your email"
           />
         </div>
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="block text-lg mb-2" htmlFor="password">
             Password
           </label>
@@ -101,6 +113,20 @@ export default function Login() {
             required
             className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter your password"
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-lg mb-2" htmlFor="confirmPassword">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Confirm your password"
           />
         </div>
         <button

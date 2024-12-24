@@ -1,21 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 export default function ResetPassword() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [searchParams, setSearchParams] = useState<URLSearchParams | null>(null);
 
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+
+  // Récupérer les paramètres d'URL seulement côté client
+  useEffect(() => {
+    setIsClient(true);
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setSearchParams(params);
+    }
+  }, []);
+
+  const token = searchParams ? searchParams.get("token") : null;
 
   // Récupération du CSRF token à l'initialisation du composant
   useEffect(() => {
@@ -65,59 +75,66 @@ export default function ResetPassword() {
     }
   };
 
+  // S'assurer que le composant ne s'affiche qu'après avoir récupéré les paramètres de l'URL côté client
+  if (!isClient || !token) {
+    return <div>Chargement...</div>;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">
-          Réinitialiser le mot de passe
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+    <Suspense fallback={<div>Chargement...</div>}>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center mb-4">
+          Reset password
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+               New password :
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm password :
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2 px-4 bg-indigo-900 text-black font-semibold rounded-md shadow hover:bg-indigo-800"
             >
-              Nouveau mot de passe :
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirmer le mot de passe :
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-indigo-900 text-black font-semibold rounded-md shadow hover:bg-indigo-800"
-          >
-            Réinitialiser
-          </button>
-        </form>
-        {message && (
-          <p className="mt-4 text-sm text-green-600 text-center">{message}</p>
-        )}
-        {error && (
-          <p className="mt-4 text-sm text-red-600 text-center">{error}</p>
-        )}
+              Reset
+            </button>
+          </form>
+          {message && (
+            <p className="mt-4 text-sm text-green-600 text-center">{message}</p>
+          )}
+          {error && (
+            <p className="mt-4 text-sm text-red-600 text-center">{error}</p>
+          )}
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 }

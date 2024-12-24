@@ -10,6 +10,8 @@ import {
   UserIcon,
   BookOpenIcon,
   InformationCircleIcon,
+  MagnifyingGlassIcon,
+  ChatBubbleLeftIcon 
  
 } from "@heroicons/react/24/solid";
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
@@ -134,15 +136,25 @@ const AvailableBooksPage = () => {
               </Link>
             </li>
             <li>
+              <Link href="/search" onClick={() => setIsMenuOpen(false)}>
+                Search
+              </Link>
+            </li>
+            <li>
               <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
                 My Library
               </Link>
             </li>
             <li>
-              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/information" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
             </li>
+            <li>
+                <Link href="/loan-requests" onClick={() => setIsMenuOpen(false)}> {/* Lien vers la page des demandes de prêt */}
+                  Loan Requests
+                </Link>
+              </li>
             <li>
               <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
                 Available Books
@@ -151,6 +163,11 @@ const AvailableBooksPage = () => {
             <li>
               <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
                 Scan
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
+                contact
               </Link>
             </li>
           </ul>
@@ -165,14 +182,23 @@ const AvailableBooksPage = () => {
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
         <Link href="/my-library">
           <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        <Link href="/about">
+        <Link href="/information">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
         {/* Icône de prêt */}
-      
+        <Link href="/loan-requests">
+  <div className="flex items-center space-x-2">
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+    <BookOpenIcon className="w-6 h-6 text-gray-700  hover:text-white transition duration-300" />
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+  </div>
+</Link>
 
         <Link href="/available-books">
           <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
@@ -181,6 +207,9 @@ const AvailableBooksPage = () => {
       <Link href="/scan">
         <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
+      <Link href="/contact">
+  <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+</Link>
       </div>
 
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">

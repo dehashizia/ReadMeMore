@@ -64,3 +64,15 @@ CREATE TABLE loan_request (
     FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE SET NULL,
     FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE
 );
+
+CREATE TABLE message (
+  message_id SERIAL PRIMARY KEY,
+  loan_request_id INT NOT NULL,
+  sender_id INT NOT NULL,
+  recipient_id INT NOT NULL,
+  content TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (loan_request_id) REFERENCES loan_request(request_id),
+  FOREIGN KEY (sender_id) REFERENCES "user"(user_id),
+  FOREIGN KEY (recipient_id) REFERENCES "user"(user_id)
+);

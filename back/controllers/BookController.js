@@ -4,6 +4,8 @@ const Book = require("../models/Book");
 const Category = require("../models/Category");
 const User = require("../models/User");
 const LoanRequest = require("../models/LoanRequest");
+const { sendLoanRequestEmail } = require("../mailer");
+const { sendLoanRequestNotification } = require("../mailer");
 
 const jwt = require("jsonwebtoken");
 
@@ -359,6 +361,7 @@ const requestLoan = async (req, res) => {
     // Vérification que le livre existe et est disponible
     const book = await Book.findOne({
       where: { book_id: bookId, is_available_for_loan: true },
+      include: { model: User, as: "user", attributes: ["email", "username"] }, // Inclure les détails du propriétaire
     });
 
     if (!book) {
@@ -373,6 +376,8 @@ const requestLoan = async (req, res) => {
       user_id: user.userId,
       status: "En attente", // Peut-être "acceptée", "refusée" selon ton système
     });
+    // Envoyer une notification par e-mail au propriétaire
+    await sendLoanRequestEmail(book.user.email, book.user.username, book.title);
 
     res.status(201).json({ message: "Demande de prêt envoyée", loanRequest });
   } catch (error) {
@@ -460,31 +465,51 @@ const updateLoanRequestStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-    // Vérification du token (utilisation de la même méthode que pour getLoanRequests)
-    const user = verifyToken(req); // Vérifie et extrait l'utilisateur connecté
+    const user = verifyToken(req);
 
     if (!user) {
       return res.status(401).json({ error: "Utilisateur non authentifié" });
     }
 
-    const loanRequest = await LoanRequest.findByPk(requestId);
+    const loanRequest = await LoanRequest.findByPk(requestId, {
+      include: [
+        {
+          model: Book,
+          as: "Book",
+          attributes: ["title", "user_id"],
+          include: [{ model: User, as: "user", attributes: ["email"] }],
+        },
+        { model: User, as: "RequestingUser", attributes: ["email"] },
+      ],
+    });
 
     if (!loanRequest) {
       return res.status(404).json({ error: "Demande de prêt non trouvée." });
     }
 
-    // Mettre à jour le statut de la demande
+    // Mise à jour du statut de la demande
     loanRequest.status = status;
     await loanRequest.save();
 
-    // Mettre à jour la disponibilité du livre si accepté
-    if (status === "Accepté") {
+    // Mise à jour de la disponibilité du livre si accepté
+    if (status === "accepted") {
       const book = await Book.findByPk(loanRequest.book_id);
       if (book) {
         book.is_available_for_loan = false;
         await book.save();
       }
     }
+
+    // Récupérer l'adresse e-mail et le titre du livre
+    const email =
+      status === "accepted" || status === "declined"
+        ? loanRequest.RequestingUser.email
+        : loanRequest.Book.user.email;
+
+    const bookTitle = loanRequest.Book.title;
+
+    // Envoi de l'e-mail de notification
+    await sendLoanRequestNotification(email, bookTitle, status);
 
     res.status(200).json({ message: "Statut de la demande mis à jour." });
   } catch (err) {

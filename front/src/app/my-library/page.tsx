@@ -12,7 +12,7 @@ import {
   CheckCircleIcon,
   HeartIcon,
   TrashIcon,
-  ArrowPathIcon, 
+  ChatBubbleLeftIcon  
 } from "@heroicons/react/24/solid";
 import { FaGithub, FaTwitter, FaLinkedin,FaQrcode, FaArrowAltCircleRight, FaBars,
   FaTimes, } from 'react-icons/fa';
@@ -195,10 +195,15 @@ export default function MyLibrary() {
               </Link>
             </li>
             <li>
-              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/information" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
             </li>
+            <li>
+                <Link href="/loan-requests" onClick={() => setIsMenuOpen(false)}> {/* Lien vers la page des demandes de prêt */}
+                  Loan Requests
+                </Link>
+              </li>
             <li>
               <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
                 Available Books
@@ -206,6 +211,11 @@ export default function MyLibrary() {
             </li>
             <li>
               <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 Scan
               </Link>
             </li>
@@ -222,10 +232,17 @@ export default function MyLibrary() {
         <Link href="/search">
           <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
-        <Link href="/about">
+        <Link href="/information">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
         </Link>
         {/* Icône de prêt */}
+        <Link href="/loan-requests">
+  <div className="flex items-center space-x-2">
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+    <BookOpenIcon className="w-6 h-6 text-gray-700  hover:text-white transition duration-300" />
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+  </div>
+</Link>
       <Link href="/available-books">
         <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
@@ -234,6 +251,9 @@ export default function MyLibrary() {
       <Link href="/scan">
         <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
+      <Link href="/contact">
+  <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+</Link>
       </div>
 
       {/* Title Section */}
@@ -333,7 +353,7 @@ export default function MyLibrary() {
        {/* Footer */}
 <footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
   <div className="max-w-screen-xl mx-auto flex justify-between items-center">
-    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés. | Développé avec ❤️ pour les lecteurs du monde entier.</p>
     <ul className="flex space-x-6">
       <li>
         <a href="/legal" className="hover:underline">

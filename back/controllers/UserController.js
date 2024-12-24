@@ -14,6 +14,10 @@ const registerSchema = Joi.object({
       "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial."
     )
     .required(),
+  confirmPassword: Joi.string()
+    .valid(Joi.ref("password"))
+    .required()
+    .messages({ "any.only": "Les mots de passe ne correspondent pas." }),
 });
 
 const loginSchema = Joi.object({
@@ -22,13 +26,14 @@ const loginSchema = Joi.object({
 });
 
 exports.register = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
   const lowercaseEmail = email.toLowerCase();
 
   const { error } = registerSchema.validate({
     username,
     email: lowercaseEmail,
     password,
+    confirmPassword,
   });
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
@@ -56,7 +61,7 @@ exports.register = async (req, res) => {
     const emailToken = jwt.sign(
       { userId: user.user_id },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" } // Le token expire après 1 jour
+      { expiresIn: "1d" }
     );
 
     // Envoi de l'email de confirmation
@@ -83,7 +88,6 @@ exports.register = async (req, res) => {
     });
   }
 };
-
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const lowercaseEmail = email.toLowerCase();

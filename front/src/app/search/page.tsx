@@ -9,6 +9,7 @@ import {
   UserIcon,
   BookOpenIcon,
   InformationCircleIcon,
+  ChatBubbleLeftIcon
  
 } from "@heroicons/react/24/solid";
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
@@ -153,10 +154,15 @@ export default function Search() {
               </Link>
             </li>
             <li>
-              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/information" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
             </li>
+            <li>
+                <Link href="/loan-requests" onClick={() => setIsMenuOpen(false)}> {/* Lien vers la page des demandes de prêt */}
+                  Loan Requests
+                </Link>
+              </li>
             <li>
               <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
                 Available Books
@@ -164,6 +170,11 @@ export default function Search() {
             </li>
             <li>
               <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                Scan
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
                 Scan
               </Link>
             </li>
@@ -182,11 +193,18 @@ export default function Search() {
         <Link href="/my-library">
           <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        <Link href="/about">
+        <Link href="/information">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        {/* Icône de prêt */}
-      
+        
+      {/* Icône de prêt */}
+      <Link href="/loan-requests">
+  <div className="flex items-center space-x-2">
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+    <BookOpenIcon className="w-6 h-6 text-gray-700  hover:text-white transition duration-300" />
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+  </div>
+</Link>
 
         <Link href="/available-books">
           <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
@@ -195,6 +213,9 @@ export default function Search() {
       <Link href="/scan">
         <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
+      <Link href="/contact">
+  <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+</Link>
       </div>
       
 

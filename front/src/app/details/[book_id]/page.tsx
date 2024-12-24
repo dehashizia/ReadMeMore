@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
-import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { UserIcon, StarIcon, BookOpenIcon, CheckCircleIcon, HeartIcon, TrashIcon, ChatBubbleLeftIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
 import {
 
@@ -46,6 +46,7 @@ export default function Details() {
   const [comments, setComments] = useState<Comment[]>([]);
   const { book_id } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [message, setMessage] = useState<{ type: string; text: string } | null>(null);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
@@ -114,12 +115,12 @@ export default function Details() {
       });
       const data = await response.json();
       if (response.ok) {
-        alert(`Livre ajouté à votre bibliothèque avec le statut : ${status}`);
+        setMessage({ type: "success", text: `Livre ajouté à votre bibliothèque avec le statut : ${status}` });
       } else {
-        console.error(data.message);
+        setMessage({ type: "error", text: data.message || "Une erreur est survenue." });
       }
     } catch (error) {
-      console.error("Erreur lors de l'ajout du livre :", error);
+      setMessage({ type: "error", text: "Erreur lors de l'ajout du livre." });
     }
   };
   const handleDeleteComment = async (comment_id: number) => {
@@ -135,12 +136,12 @@ export default function Details() {
 
       if (response.status === 200) {
         setComments((prevComments) => prevComments.filter((comment) => comment.comment_id !== comment_id));
-        alert("Commentaire supprimé avec succès !");
+        setMessage({ type: "success", text: "Commentaire supprimé avec succès !" });
       } else {
-        console.error("Erreur lors de la suppression du commentaire :", response.statusText);
+        setMessage({ type: "error", text: response.statusText || "Une erreur est survenue." });
       }
     } catch (error) {
-      console.error("Erreur lors de la suppression du commentaire :", error);
+      setMessage({ type: "error", text: "Erreur lors de la suppression du commentaire." });
     }
   };
 
@@ -159,25 +160,30 @@ export default function Details() {
       });
 
       if (response.ok) {
-        alert("Commentaire ajouté !");
+        setMessage({ type: "success", text: "Commentaire ajouté avec succès !" });
         setComment("");
         setRating(0);
         const newComment = await response.json();
         setComments((prevComments) => [...prevComments, newComment]);
       } else {
-        console.error("Erreur lors de l'ajout du commentaire :", response.statusText);
+        setMessage({ type: "error", text: response.statusText || "Une erreur est survenue." });
       }
     } catch (error) {
-      console.error("Erreur lors de l'ajout du commentaire :", error);
+      setMessage({ type: "error", text: "Erreur lors de l'ajout du commentaire." });
     }
   };
-  
   if (!isAuthenticated || !book) {
     return <div>Chargement...</div>;
   }
 
   return (
     <main className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16 pb-16">
+      {/* Messages */}
+      {message && (
+        <div className={`message ${message.type === "success" ? "text-green-500" : "text-red-500"}`}>
+          {message.text}
+        </div>
+      )}
      {/* Hamburger Menu */}
     <div className="absolute top-4 left-4 md:hidden z-50">
       <button type="button"
@@ -195,15 +201,25 @@ export default function Details() {
               </Link>
             </li>
             <li>
+              <Link href="/search" onClick={() => setIsMenuOpen(false)}>
+                search
+              </Link>
+            </li>
+            <li>
               <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
                 My Library
               </Link>
             </li>
             <li>
-              <Link href="/about" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/information" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
             </li>
+            <li>
+                <Link href="/loan-requests" onClick={() => setIsMenuOpen(false)}> {/* Lien vers la page des demandes de prêt */}
+                  Loan Requests
+                </Link>
+              </li>
             <li>
               <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
                 Available Books
@@ -212,6 +228,11 @@ export default function Details() {
             <li>
               <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
                 Scan
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
+                contact
               </Link>
             </li>
           </ul>
@@ -226,15 +247,25 @@ export default function Details() {
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
         <Link href="/my-library">
           <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        <Link href="/about">
+        <Link href="/information">
           <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
-        {/* Icône de prêt */}
+     
       
-
+{/* Icône de prêt */}
+<Link href="/loan-requests">
+      <div className="flex items-center space-x-2">
+         <UserIcon className="w-6 h-6 text-gray-700 " />
+         <BookOpenIcon className="w-6 h-6 text-gray-700  hover:text-white transition duration-300" />
+         <UserIcon className="w-6 h-6 text-gray-700 " />
+      </div>
+        </Link>
         <Link href="/available-books">
           <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
@@ -242,6 +273,9 @@ export default function Details() {
       <Link href="/scan">
         <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
       </Link>
+      <Link href="/contact">
+  <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+</Link>
       </div>
       
 

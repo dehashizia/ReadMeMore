@@ -1,12 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+import {  InformationCircleIcon } from "@heroicons/react/24/solid";
+import { FaArrowAltCircleRight, FaQrcode } from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
+
+import { UserIcon } from "@heroicons/react/24/solid";
+import { BookOpenIcon, MagnifyingGlassIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/solid";
 
 const LoanRequestsPage = () => {
+  const router = useRouter();
   const [sentRequests, setSentRequests] = useState<LoanRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<LoanRequest[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
@@ -32,10 +44,12 @@ const LoanRequestsPage = () => {
       thumbnail: string;
       user?: {
         username: string;
+        user_id: number;
       };
     };
     RequestingUser?: {
       username: string;
+      user_id: number; 
     };
   }
 
@@ -113,7 +127,95 @@ const LoanRequestsPage = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 flex flex-col">
+    <div className="min-h-screen p-4 flex flex-col  pb-16">
+      {/* Header Icons */}
+      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
+        <Link href="/profile">
+          <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/search">
+          <MagnifyingGlassIcon className="w-8 h-8 text-gray-700 cursor-pointer  hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/my-library">
+          <BookOpenIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/information">
+          <InformationCircleIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/loan-requests">
+  <div className="flex items-center space-x-2">
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+    <BookOpenIcon className="w-6 h-6 text-gray-700  hover:text-white transition duration-300" />
+    <UserIcon className="w-6 h-6 text-gray-700 " />
+  </div>
+</Link>
+        <Link href="/available-books">
+          <FaArrowAltCircleRight className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/scan">
+          <FaQrcode className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+        </Link>
+        <Link href="/contact">
+  <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
+</Link>
+      </div>
+
+      {/* Hamburger Menu */}
+      <div className="absolute top-4 left-4 md:hidden z-50">
+        <button type="button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="text-gray-700 p-2 rounded-full bg-white shadow-lg"
+        >
+          {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        </button>
+        {isMenuOpen && (
+          <div className="absolute top-10 left-0 bg-white shadow-lg rounded-lg w-48 p-4">
+            <ul className="space-y-4 text-gray-700">
+              <li>
+                <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
+                  Profile
+                </Link>
+              </li>
+              <li>
+              <Link href="/search" onClick={() => setIsMenuOpen(false)}>
+                Search
+              </Link>
+            </li>
+              <li>
+                <Link href="/my-library" onClick={() => setIsMenuOpen(false)}>
+                  My Library
+                </Link>
+              </li>
+              <li>
+                <Link href="/information" onClick={() => setIsMenuOpen(false)}>
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/loan-requests" onClick={() => setIsMenuOpen(false)}> {/* Lien vers la page des demandes de prêt */}
+                  Loan Requests
+                </Link>
+              </li>
+              <li>
+                <Link href="/available-books" onClick={() => setIsMenuOpen(false)}>
+                  Available Books
+                </Link>
+              </li>
+              <li>
+                <Link href="/scan" onClick={() => setIsMenuOpen(false)}>
+                  Scan
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
+                  Scan
+                </Link>
+              </li>
+
+            </ul>
+          </div>
+        )}
+      </div>
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
       My Loan Requests
       </h1>
@@ -236,6 +338,16 @@ const LoanRequestsPage = () => {
               >
                 Reject
               </button>
+              {/* Bouton Contacter */}
+              <button
+  type="button"
+  onClick={() =>
+    router.push(`/messages/${request.request_id}/${request.RequestingUser?.username}`)
+  }
+  className="mt-2 bg-green-600 text-white py-2 px-4 rounded-lg shadow hover:bg-green-500 transition"
+>
+  Contacter
+</button>
             </div>
           ))
         ) : (
@@ -244,6 +356,35 @@ const LoanRequestsPage = () => {
           </p>
         )}
       </div>
+       {/* Footer */}
+<footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0">
+  <div className="max-w-screen-xl mx-auto flex justify-between items-center">
+    <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
+    <ul className="flex space-x-6">
+      <li>
+        <a href="/legal" className="hover:underline">
+          Mentions légales
+        </a>
+      </li>
+      <li>
+        <a href="/privacy" className="hover:underline">
+          Politique de confidentialité
+        </a>
+      </li>
+    </ul>
+    <div className="flex space-x-6">
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <FaGithub className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+        <FaTwitter className="w-6 h-6 text-white" />
+      </a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+        <FaLinkedin className="w-6 h-6 text-white" />
+      </a>
+    </div>
+  </div>
+</footer>
     </div>
   );
 };

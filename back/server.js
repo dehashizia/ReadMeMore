@@ -15,6 +15,8 @@ const userRoutes = require("./routes/userRoutes");
 const bookRoutes = require("./routes/bookRoutes");
 const libraryRoutes = require("./routes/libraryRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const messageRoutes = require("./routes/messageRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -100,6 +102,8 @@ app.use("/api", userRoutes);
 app.use("/api", bookRoutes);
 app.use("/api", libraryRoutes);
 app.use("/api", commentRoutes);
+app.use("/api", messageRoutes);
+app.use("/api", contactRoutes);
 
 // Vérification de connexion des routes
 console.log("Routes /api/user et /api/book chargées avec succès.");

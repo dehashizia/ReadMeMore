@@ -9,6 +9,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // Nouveau champ pour confirmer le mot de passe
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
@@ -35,10 +36,15 @@ export default function Register() {
     setError("");
     setIsRegistered(false);
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${API_BASE_URL}/api/register`,
-        { username, email, password },
+        { username, email, password, confirmPassword  },
         {
           headers: {
             "X-CSRF-Token": csrfToken || "",
@@ -51,8 +57,7 @@ export default function Register() {
       localStorage.setItem("token", token);
       setIsRegistered(true);
 
-      alert("Registration successful!");
-      router.push("/auth/login");
+      setTimeout(() => router.push("/auth/login"), 2000); // Redirection après 2 secondes
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.error || "Failed to register");
@@ -78,7 +83,7 @@ export default function Register() {
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         {isRegistered && (
           <p className="text-green-500 text-center mb-4">
-            Registration successful! Please check your email to confirm your account.
+            Registration successful! Redirecting to login...
           </p>
         )}
         <div className="mb-4">
@@ -109,7 +114,7 @@ export default function Register() {
             placeholder="Enter your email"
           />
         </div>
-        <div className="mb-6">
+        <div className="mb-4">
           <label className="block text-lg mb-2" htmlFor="password">
             Password
           </label>
@@ -121,6 +126,20 @@ export default function Register() {
             required
             className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             placeholder="Enter your password"
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-lg mb-2" htmlFor="confirmPassword">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className="w-full p-3 border rounded-lg bg-gray-100 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Confirm your password"
           />
         </div>
         <button

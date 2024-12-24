@@ -24,14 +24,7 @@ export default function Home() {
         <h1 className="text-black text-2xl sm:text-4xl font-bold mb-4"> 
           Welcome to app
           </h1>
-          <div className="flex justify-center space-x-1">
-          <span className="text-orange-500 text-4xl font-bold">.</span>
-          <span className="text-white text-4xl font-bold">.</span>
-          <span className="text-white text-4xl font-bold ">.</span>
-          </div>
-     
-
-        <div className="flex items-center mt-4">
+          <div className="flex items-center mt-4">
           <h2 className="text-black text-3xl sm:text-5xl font-bold ">
             Read
           </h2>
