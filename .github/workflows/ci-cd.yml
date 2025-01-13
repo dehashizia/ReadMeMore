@@ -1,0 +1,44 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configuration pour le frontend
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: "8"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: ./front/pnpm-lock.yaml
+
+      # Build du frontend
+      - name: Install frontend dependencies
+        run: pnpm install
+        working-directory: ./front
+
+      - name: Build frontend
+        run: pnpm build
+        working-directory: ./front
+
+      # Configuration pour le backend
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: ./back
+
+      # Build des images Docker
+      - name: Build Docker images
+        run: docker-compose build
