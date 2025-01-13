@@ -245,6 +245,7 @@ export default function Search() {
         />
         <button
           type="submit"
+          aria-label="Submit search"
           className="bg-indigo-950 text-white p-3 rounded-full hover:bg-indigo-800 transition duration-300"
         >
           Search

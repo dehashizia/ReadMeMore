@@ -13,7 +13,11 @@ const User = sequelize.define(
     email: { type: DataTypes.STRING, unique: true, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
     role_id: { type: DataTypes.INTEGER, defaultValue: 1 },
-    emailConfirmed: { type: DataTypes.BOOLEAN, defaultValue: false },
+    emailConfirmed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: "emailConfirmed",
+    },
     profile_photo: {
       type: DataTypes.STRING,
       allowNull: true,

@@ -216,7 +216,7 @@ export default function MyLibrary() {
             </li>
             <li>
               <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
-                Scan
+                Contact
               </Link>
             </li>
           </ul>

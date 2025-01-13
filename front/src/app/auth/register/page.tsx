@@ -9,7 +9,7 @@ export default function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); // Nouveau champ pour confirmer le mot de passe
+  const [confirmPassword, setConfirmPassword] = useState(""); 
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);

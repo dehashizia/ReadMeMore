@@ -1,4 +1,17 @@
 import Link from 'next/link';
+export const metadata = {
+  title: 'ReadMeMore - Your Favorite Book App',
+  description: 'Discover and share your favorite books with ReadMeMore. Build your library, track your readings, and connect with other readers.',
+  keywords: 'books, library, reading, app, ReadMeMore, favorite books',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'ReadMeMore - Your Favorite Book App',
+    description: 'Discover and share your favorite books with ReadMeMore. Build your library, track your readings, and connect with other readers.',
+    images: ['/logo.jpg'],
+    url: 'https://www.readmemoreapp.com',
+  },
+};
+
 
 export default function Home() {
   return (
@@ -28,11 +41,14 @@ export default function Home() {
           <h2 className="text-black text-3xl sm:text-5xl font-bold ">
             Read
           </h2>
-          <img
-            src="/logo.jpg"
-            alt="Logo"
-            className=" mx-2 w-20 h-20 sm:w-24 sm:h-24  rounded-[20px]"
-          />
+          <picture>
+            <source srcSet="/logo.webp" type="image/webp" />
+            <img
+              src="/logo.jpg"
+              alt="Logo"
+              className="mx-2 w-20 h-20 sm:w-24 sm:h-24 rounded-[20px]"
+            />
+          </picture>
           <h2 className="text-black text-3xl sm:text-5xl font-bold ">
             eMore
           </h2>

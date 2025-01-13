@@ -5,7 +5,7 @@ const csrf = require("csurf");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const multer = require("multer");
-const path = require("path");
+const path = require("node:path");
 require("dotenv").config();
 require("./database");
 const jwt = require("jsonwebtoken");
@@ -78,24 +78,38 @@ app.post(
   }
 );
 
-// Middleware
+// Middleware - Ordre important
+app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: process.env.CORS_ORIGIN || "http://localhost:3001",
     credentials: true,
   })
 );
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(helmet());
 
-const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+// Configuration de helmet avec les paramètres CSRF
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+// CSRF configuration
+const csrfProtection = csrf({
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  },
+});
 
-// CSRF token route
-app.get("/api/csrf-token", (req, res) => {
+// Route CSRF avant la protection
+app.get("/api/csrf-token", csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
+
+// Appliquer CSRF protection après la route du token
+app.use("/api", csrfProtection);
 
 // Utilisation des routes
 app.use("/api", userRoutes);
@@ -108,7 +122,28 @@ app.use("/api", contactRoutes);
 // Vérification de connexion des routes
 console.log("Routes /api/user et /api/book chargées avec succès.");
 console.log("Route /api/library chargée avec succès.");
-// Démarrage du serveur
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+
+// Gestionnaire d'erreurs
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  if (err.code === "EBADCSRFTOKEN") {
+    return res.status(403).json({
+      error: "Invalid CSRF token",
+      details: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
+  }
+  res.status(500).json({
+    error: "Something went wrong!",
+    details: process.env.NODE_ENV === "development" ? err.message : undefined,
+  });
 });
+
+// Démarrage du serveur avec gestion d'erreur
+const server = app
+  .listen(port, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${port}`);
+  })
+  .on("error", (err) => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  });
