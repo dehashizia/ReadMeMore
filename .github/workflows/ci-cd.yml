@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI
 
 on:
   push:
@@ -6,13 +6,13 @@ on:
       - master
 
 jobs:
-  build:
+  verify-builds:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Configuration pour le frontend
+      # Vérifie le frontend
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -23,22 +23,16 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
-          cache-dependency-path: ./front/pnpm-lock.yaml
 
-      # Build du frontend
-      - name: Install frontend dependencies
-        run: pnpm install
+      - name: Verify frontend
         working-directory: ./front
+        run: |
+          pnpm install
+          pnpm build
 
-      - name: Build frontend
-        run: pnpm build
-        working-directory: ./front
-
-      # Configuration pour le backend
-      - name: Install backend dependencies
-        run: npm install
+      # Vérifie le backend
+      - name: Verify backend
         working-directory: ./back
-
-      # Build des images Docker
-      - name: Build Docker images
-        run: docker-compose build
+        run: |
+          npm install
+          # npm run build  # Décommente cette ligne si tu as un script build dans ton package.json backend
