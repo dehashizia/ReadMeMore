@@ -32,7 +32,7 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./front
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
 
       # Étape 5 : Build du frontend
       - name: Build frontend
