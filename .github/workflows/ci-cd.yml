@@ -9,39 +9,44 @@ jobs:
   verify-builds:
     runs-on: ubuntu-latest
     steps:
+      # Étape 1 : Cloner le dépôt
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Étape 2 : Installer pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: "8"
 
+      # Étape 3 : Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
+          # On précise ici où se trouve le fichier de lock pour le cache
+          cache-dependency-path: ./front/pnpm-lock.yaml
 
-      # Installer les dépendances frontend
+      # Étape 4 : Installer les dépendances frontend
       - name: Install frontend dependencies
         working-directory: ./front
         run: |
           pnpm install --frozen-lockfile
 
-      # Build frontend
+      # Étape 5 : Build du frontend
       - name: Build frontend
         working-directory: ./front
         run: |
           pnpm build
 
-      # Vérifie le backend
+      # Étape 6 : Installer les dépendances backend
       - name: Install backend dependencies
         working-directory: ./back
         run: |
           npm install
 
-      # Tests backend (ou build si nécessaire)
+      # Étape 7 : Vérification backend (tests ou build)
       - name: Verify backend
         working-directory: ./back
         run: |
