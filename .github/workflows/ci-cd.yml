@@ -12,7 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Vérifie le frontend
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
@@ -24,15 +23,26 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
-      - name: Verify frontend
+      # Installer les dépendances frontend
+      - name: Install frontend dependencies
         working-directory: ./front
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
+
+      # Build frontend
+      - name: Build frontend
+        working-directory: ./front
+        run: |
           pnpm build
 
       # Vérifie le backend
-      - name: Verify backend
+      - name: Install backend dependencies
         working-directory: ./back
         run: |
           npm install
-          # npm run build  # Décommente cette ligne si tu as un script build dans ton package.json backend
+
+      # Tests backend (ou build si nécessaire)
+      - name: Verify backend
+        working-directory: ./back
+        run: |
+          npm test
