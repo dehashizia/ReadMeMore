@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"No tests specified\" && exit 0",
+    "test":  "jest --detectOpenHandles",
     "start": "node server.js"
   },
   "keywords": [],
@@ -28,5 +28,9 @@
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
