@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches:
@@ -7,21 +8,6 @@ on:
 jobs:
   verify-builds:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U ${{ secrets.DB_USER }}"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       # Étape 1 : Cloner le dépôt
       - name: Checkout code
@@ -39,6 +25,7 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
+          # On précise ici où se trouve le fichier de lock pour le cache
           cache-dependency-path: ./front/pnpm-lock.yaml
 
       # Étape 4 : Installer les dépendances frontend
@@ -59,16 +46,8 @@ jobs:
         run: |
           npm install
 
-      # Étape 7 : Vérification backend
+      # Étape 7 : Vérification backend (tests ou build)
       - name: Verify backend
         working-directory: ./back
-        env:
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: ${{ secrets.DB_NAME }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          NODE_ENV: test
         run: |
           npm test
