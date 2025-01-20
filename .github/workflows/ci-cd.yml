@@ -34,19 +34,25 @@ jobs:
         run: |
           pnpm install
 
-      # Étape 5 : Build du frontend
+      # Étape 5 : Exécuter les tests frontend
+      - name: Run frontend tests
+        working-directory: ./front
+        run: |
+          pnpm test
+
+      # Étape 6 : Build du frontend
       - name: Build frontend
         working-directory: ./front
         run: |
           pnpm build
 
-      # Étape 6 : Installer les dépendances backend
+      # Étape 7 : Installer les dépendances backend
       - name: Install backend dependencies
         working-directory: ./back
         run: |
           npm install
 
-      # Étape 7 : Vérification backend (tests ou build)
+      # Étape 8 : Vérification backend (tests ou build)
       - name: Verify backend
         working-directory: ./back
         run: |
