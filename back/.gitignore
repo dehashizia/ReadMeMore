@@ -18,4 +18,5 @@ build/
 # System files
 .DS_Store
 Thumbs.db
-/uploads/profiles/
+back/uploads/profiles/
+back/controllers/_tests_/BookController.test.js

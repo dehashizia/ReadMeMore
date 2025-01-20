@@ -150,30 +150,7 @@ export default function Comments() {
   <ChatBubbleLeftIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
 </Link>
       </div>
-      {/* Section de suggestions personnalisées */}
-      <div className="w-full max-w-2xl mb-10 bg-white p-8 rounded-lg shadow-xl">
-        <h2 className="text-2xl font-semibold mb-6 text-black">Suggestions pour vous</h2>
-        <div className="bg-gray-50 p-6 rounded-lg shadow-md">
-          <p className="text-lg text-gray-700">Découvrez ces livres basés sur vos préférences récentes :</p>
-          {/* Exemple de suggestions */}
-          <ul className="mt-6 space-y-4">
-            <li className="flex items-center space-x-4">
-              <img src="https://via.placeholder.com/70" alt="Livre 1" className="w-16 h-24 object-cover rounded-md shadow-md" />
-              <div className="flex-1">
-                <p className="text-lg font-semibold text-black">Livre Suggestion 1</p>
-                <p className="text-sm text-gray-500">Auteur Suggestion 1</p>
-              </div>
-            </li>
-            <li className="flex items-center space-x-4">
-              <img src="https://via.placeholder.com/70" alt="Livre 2" className="w-16 h-24 object-cover rounded-md shadow-md" />
-              <div className="flex-1">
-                <p className="text-lg font-semibold text-black">Livre Suggestion 2</p>
-                <p className="text-sm text-gray-500">Auteur Suggestion 2</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
+     
 
       {/* Section des commentaires */}
       <div className="w-full max-w-2xl bg-white p-8 rounded-lg shadow-xl">
@@ -210,7 +187,7 @@ export default function Comments() {
             </div>
           ))
         ) : (
-          <p className="text-gray-400">Aucun commentaire pour ce livre.</p>
+          <p className="text-gray-400">Aucun commentaire</p>
         )}
       </div>
       {/* Footer */}

@@ -46,16 +46,7 @@ jobs:
         run: |
           npm install
 
-      # Étape 7 : Configurer les variables d'environnement
-      - name: Set environment variables
-        run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-          # Ajoute d'autres variables si nécessaire
-
-      # Étape 8 : Vérification backend (tests ou build)
+      # Étape 7 : Vérification backend (tests ou build)
       - name: Verify backend
         working-directory: ./back
         run: |

@@ -59,9 +59,9 @@ export default function Login() {
       const token = response.data.token;
       localStorage.setItem("token", token);
 
-      setSuccessMessage("Login successful! Redirecting to search page...");
+      setSuccessMessage("Login successful! Redirecting to Actus page...");
       setTimeout(() => {
-        router.push("/search");
+        router.push("/comments");
       }, 2000);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
