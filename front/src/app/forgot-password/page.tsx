@@ -10,7 +10,7 @@ export default function ForgotPassword() {
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
 
   const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
   // Récupération du CSRF token à l'initialisation du composant
   useEffect(() => {

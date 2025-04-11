@@ -27,7 +27,7 @@ const MessagePage = () => {
   const [newMessage, setNewMessage] = useState<string>(""); // Nouveau message
   const [csrfToken, setCsrfToken] = useState<string>("");
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"; // Récupérer l'URL de base de l'API
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000"; // Récupérer l'URL de base de l'API
 
   // Fonction pour récupérer le CSRF token
   const fetchCsrfToken = useCallback(async () => {
