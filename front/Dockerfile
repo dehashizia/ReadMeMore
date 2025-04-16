@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Étape 3 : Copier les fichiers nécessaires (package.json et pnpm-lock.yaml)
-COPY package.json front/pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
 # Installer pnpm et les dépendances
 RUN npm install -g pnpm && pnpm install
