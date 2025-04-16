@@ -8,7 +8,7 @@ export const metadata = {
     title: 'ReadMeMore - Your Favorite Book App',
     description: 'Discover and share your favorite books with ReadMeMore. Build your library, track your readings, and connect with other readers.',
     images: ['/logo.jpg'],
-    url: 'https://www.readmemoreapp.com',
+    url: 'https://read-me-blush.vercel.app/',
   },
 };
 

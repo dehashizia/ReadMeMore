@@ -78,37 +78,51 @@ app.post(
   }
 );
 
-// Middleware - Ordre important
+// === Middleware ===
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+// === CORS configuration ===
+const allowedOrigins = [
+  "http://localhost:3001",
+  "https://read-me-blush.vercel.app",
+];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3001",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
-// Configuration de helmet avec les paramètres CSRF
+// === Helmet (sécurité) ===
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
-// CSRF configuration
+
+// === CSRF configuration ===
 const csrfProtection = csrf({
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "none",
   },
 });
 
-// Route CSRF avant la protection
+// === CSRF Token route (avant middleware de protection) ===
 app.get("/api/csrf-token", csrfProtection, (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-// Appliquer CSRF protection après la route du token
+// === Middleware CSRF sur toutes les routes API
 app.use("/api", csrfProtection);
 
 // Utilisation des routes
