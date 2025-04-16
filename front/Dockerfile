@@ -5,23 +5,23 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Étape 3 : Copier les fichiers nécessaires (package.json et pnpm-lock.yaml)
-COPY front/package.json front/pnpm-lock.yaml ./
+COPY package.json front/pnpm-lock.yaml ./
 
 # Installer pnpm et les dépendances
 RUN npm install -g pnpm && pnpm install
 
 # Étape 4 : Copier le fichier .env dans le conteneur
-COPY front/src/.env .env
+COPY src/.env .env
 
 # Étape 5 : Copier tout le reste des fichiers de front/src dans le conteneur
-COPY front/src /app/src
+COPY src /app/src
 
 # Étape 6 : Copier le dossier public dans le conteneur
-COPY front/public /app/public
+COPY public /app/public
 
 # Étape 7 : Copier les fichiers de configuration de Tailwind et PostCSS
-COPY front/tailwind.config.ts /app/tailwind.config.ts
-COPY front/postcss.config.mjs /app/postcss.config.mjs
+COPY tailwind.config.ts /app/tailwind.config.ts
+COPY postcss.config.mjs /app/postcss.config.mjs
 
 # Étape 8 : Construire l'application Next.js
 RUN pnpm build

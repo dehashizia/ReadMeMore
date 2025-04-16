@@ -13,7 +13,7 @@ export default function ResetPassword() {
   const [isClient, setIsClient] = useState(false);
   const [searchParams, setSearchParams] = useState<URLSearchParams | null>(null);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://readmemore.onrender.com";
 
   // Récupérer les paramètres d'URL seulement côté client
   useEffect(() => {

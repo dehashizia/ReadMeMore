@@ -32,7 +32,7 @@ export default function Settings() {
   const router = useRouter();
   const [randomPosition, setRandomPosition] = useState<string>("left");
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://readmemore.onrender.com";
 
   useEffect(() => {
     const fetchUserData = async () => {

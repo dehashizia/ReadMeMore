@@ -35,7 +35,7 @@ export default function MyLibrary() {
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const { book_id } = useParams();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://readmemore.onrender.com";
 
   const statuses = [
     { key: "wishlist", label: "Wishlist", icon: StarIcon, color: "text-yellow-500" },

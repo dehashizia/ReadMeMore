@@ -48,7 +48,7 @@ export default function Details() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [message, setMessage] = useState<{ type: string; text: string } | null>(null);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://readmemore.onrender.com";
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
