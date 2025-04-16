@@ -129,7 +129,7 @@ export default function Search() {
 
   return (
     <main
-    className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-16 pb-16"
+    className="relative min-h-screen p-4 flex flex-col items-center bg-cover bg-center pt-32 pb-16"
       style={{ backgroundImage: "url('/LL.webp')" }}
     >
       {/* Hamburger Menu */}
@@ -186,7 +186,7 @@ export default function Search() {
       
       {/* Header Icons */}
      
-  <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
+      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex z-30`}>
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
@@ -274,7 +274,7 @@ export default function Search() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-8">
         {filteredResults.map((book) => (
           <div
-            key={book.book_id}
+          key={`book-${book.book_id ?? Math.random()}`}
             className="flex flex-col items-center bg-white bg-opacity-80 backdrop-blur-lg border p-4 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
           >
             {book.thumbnail && (
