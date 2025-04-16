@@ -10,12 +10,18 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT,
     dialect: "postgres",
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   }
 );
 
 sequelize
   .authenticate()
-  .then(() => console.log("Connected to the database with Sequelize"))
-  .catch((err) => console.error("Error connecting to the database", err));
+  .then(() => console.log("✅ Connected to the database with Sequelize"))
+  .catch((err) => console.error("❌ Error connecting to the database", err));
 
 module.exports = sequelize;
