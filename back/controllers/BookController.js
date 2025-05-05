@@ -34,6 +34,7 @@ const searchBooks = async (req, res) => {
   }
 
   try {
+    // Rechercher d’abord en BDD
     const existingBooks = await Book.findAll({
       where: { title: { [Op.iLike]: `%${query}%` } },
       include: {
@@ -55,19 +56,36 @@ const searchBooks = async (req, res) => {
       );
     }
 
-    const googleBooksResponse = await axios.get(
-      "https://www.googleapis.com/books/v1/volumes",
-      {
+    // Appels API Google Books en FR et EN
+    const [frRes, enRes] = await Promise.all([
+      axios.get("https://www.googleapis.com/books/v1/volumes", {
         params: {
           q: query,
           key: GOOGLE_BOOKS_API_KEY,
-          maxResults: 10,
+          maxResults: 5,
+          langRestrict: "fr",
         },
-      }
-    );
-    const booksData = googleBooksResponse.data.items;
+      }),
+      axios.get("https://www.googleapis.com/books/v1/volumes", {
+        params: {
+          q: query,
+          key: GOOGLE_BOOKS_API_KEY,
+          maxResults: 5,
+          langRestrict: "en",
+        },
+      }),
+    ]);
 
+    // Fusionner les résultats sans doublons (par ID Google)
+    const mergedItems = {};
+    const allItems = [...(frRes.data.items || []), ...(enRes.data.items || [])];
+    for (const item of allItems) {
+      mergedItems[item.id] = item;
+    }
+
+    const booksData = Object.values(mergedItems);
     const books = [];
+
     for (const bookData of booksData) {
       const volumeInfo = bookData.volumeInfo;
       const categoryName = volumeInfo.categories?.[0] || "Non catégorisé";
@@ -80,6 +98,7 @@ const searchBooks = async (req, res) => {
       }
 
       const isbn = volumeInfo.industryIdentifiers?.[0]?.identifier;
+
       if (!isbn) {
         books.push({
           title: volumeInfo.title,
@@ -94,6 +113,7 @@ const searchBooks = async (req, res) => {
         where: { isbn },
         include: { model: Category, as: "category" },
       });
+
       if (!existingBook) {
         const newBook = await Book.create({
           title: volumeInfo.title,
@@ -101,7 +121,7 @@ const searchBooks = async (req, res) => {
           category_id: category.category_id,
           published_date: volumeInfo.publishedDate,
           description: volumeInfo.description,
-          isbn: isbn,
+          isbn,
           page_count: volumeInfo.pageCount,
           thumbnail: volumeInfo.imageLinks?.thumbnail,
           language: volumeInfo.language,
