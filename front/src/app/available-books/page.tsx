@@ -212,7 +212,7 @@ const AvailableBooksPage = () => {
 </Link>
       </div>
 
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mt-16 mb-6">
       Books available for loan
       </h1>
 

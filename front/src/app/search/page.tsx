@@ -241,7 +241,7 @@ export default function Search() {
         ))}
       </div>
 
-      <footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full fixed bottom-0 left-0 px-4">
+      <footer className="bg-gradient-to-r from-indigo-950 via-orange-900 border-t-yellow-900 text-white py-4 mt-12 w-full px-4">
   <div className="max-w-screen-xl mx-auto flex justify-between items-center flex-wrap gap-y-2">
     <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
     <ul className="flex space-x-6">
