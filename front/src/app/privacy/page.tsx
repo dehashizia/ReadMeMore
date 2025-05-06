@@ -7,7 +7,6 @@ export default function PrivacyPolicy() {
         Politique de Confidentialité
       </h1>
       <div className="text-gray-800 leading-relaxed space-y-6">
-
         <p>
           La présente Politique de Confidentialité a pour objectif de vous informer de la manière dont nous
           collectons, utilisons, stockons et protégeons vos données personnelles, conformément à la loi n° 78-17
@@ -17,7 +16,10 @@ export default function PrivacyPolicy() {
         <h2 className="font-bold text-lg">1. Responsable du traitement</h2>
         <p>
           Le responsable du traitement est : <strong>DEHAS Hizia</strong>, développeuse web indépendante.
-          <br />Contact : <a href="mailto:hiziadehas@gmail.com" className="underline text-blue-600">hiziadehas@gmail.com</a>
+          <br />Contact :{" "}
+          <a href="mailto:hiziadehas@gmail.com" className="underline text-blue-600">
+            hiziadehas@gmail.com
+          </a>
         </p>
 
         <h2 className="font-bold text-lg">2. Données collectées</h2>
@@ -39,9 +41,7 @@ export default function PrivacyPolicy() {
         </ul>
 
         <h2 className="font-bold text-lg">4. Partage des données</h2>
-        <p>
-          Vos données ne sont jamais vendues. Elles peuvent être partagées avec :
-        </p>
+        <p>Vos données ne sont jamais vendues. Elles peuvent être partagées avec :</p>
         <ul className="list-disc ml-5">
           <li>Des prestataires techniques (hébergement, emailing) dans le cadre de contrats de sous-traitance</li>
           <li>Les autorités si la loi l'exige (ex. ordonnance judiciaire)</li>
@@ -68,7 +68,11 @@ export default function PrivacyPolicy() {
           <li>Droit d’introduire une réclamation auprès de la CNIL (www.cnil.fr)</li>
         </ul>
         <p>
-          Pour exercer vos droits, contactez-nous à <a href="mailto:hiziadehas@gmail.com" className="underline text-blue-600">hiziadehas@gmail.com</a>.
+          Pour exercer vos droits, contactez-nous à{" "}
+          <a href="mailto:hiziadehas@gmail.com" className="underline text-blue-600">
+            hiziadehas@gmail.com
+          </a>
+          .
         </p>
 
         <h2 className="font-bold text-lg">8. Modifications</h2>
@@ -79,7 +83,7 @@ export default function PrivacyPolicy() {
         <h2 className="font-bold text-lg">9. Contact</h2>
         <ul className="list-disc ml-5">
           <li>Email : hiziadehas@gmail.com</li>
-
+         
         </ul>
 
         <p className="mt-6 text-sm text-gray-600">
