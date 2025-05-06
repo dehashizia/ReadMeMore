@@ -129,7 +129,7 @@ const LoanRequestsPage = () => {
   return (
     <div className="min-h-screen p-4 flex flex-col  pb-16">
       {/* Header Icons */}
-      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
+      <div className="hidden sm:flex absolute top-0 right-0 p-4">
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
