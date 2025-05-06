@@ -17,7 +17,7 @@ const Information = () => {
   return (
     <div className="min-h-screen flex flex-col justify-between pb-16">
       {/* Header Icons */}
-      <div className={`absolute top-0 right-0 p-4 ${isMenuOpen ? 'hidden' : ''} sm:flex`}>
+      <div className="hidden sm:flex absolute top-0 right-0 p-4">
         <Link href="/profile">
           <UserIcon className="w-8 h-8 text-gray-700 cursor-pointer hover:text-white transition duration-300" />
         </Link>
@@ -106,7 +106,7 @@ const Information = () => {
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <h1 className="text-3xl font-extrabold mb-4">À propos de ReadMeMore</h1>
+        <h1 className="text-3xl font-extrabold mt-16 mb-6">À propos de ReadMeMore</h1>
 
         <section className="space-y-4">
           <p>
