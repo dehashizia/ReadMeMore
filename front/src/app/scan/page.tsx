@@ -260,27 +260,13 @@ export default function ScanPage() {
         <div className="max-w-screen-xl mx-auto flex justify-between items-center">
           <p className="text-sm">&copy; {new Date().getFullYear()} ReadMeMore. Tous droits réservés.</p>
           <ul className="flex space-x-6">
-            <li>
-              <a href="/legal" className="hover:underline">
-                Mentions légales
-              </a>
-            </li>
-            <li>
-              <a href="/privacy" className="hover:underline">
-                Politique de confidentialité
-              </a>
-            </li>
+            <li><a href="/legal" className="hover:underline">Mentions légales</a></li>
+            <li><a href="/privacy" className="hover:underline">Politique de confidentialité</a></li>
           </ul>
           <div className="flex space-x-6">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-              <FaGithub className="w-6 h-6 text-white" />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
-              <FaTwitter className="w-6 h-6 text-white" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <FaLinkedin className="w-6 h-6 text-white" />
-            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer"><FaGithub className="w-6 h-6 text-white" /></a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><FaTwitter className="w-6 h-6 text-white" /></a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><FaLinkedin className="w-6 h-6 text-white" /></a>
           </div>
         </div>
       </footer>
